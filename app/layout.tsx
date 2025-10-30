@@ -25,7 +25,7 @@ export default function RootLayout({
         theme: dark,
       }}
     >
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <body className={`${roboto.className}`}>
           <ThemeProvider
             attribute="class"
@@ -33,9 +33,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
-            <main className="min-h-screen text-white overflow-x-hidden">
-              <ConvexClientProvider>{children}</ConvexClientProvider>
+            <main className="min-h-screen bg-[#030014] text-white overflow-hidden">
+              <ConvexClientProvider>
+                <Header />
+                {children}
+              </ConvexClientProvider>
             </main>
           </ThemeProvider>
         </body>
