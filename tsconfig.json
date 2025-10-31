@@ -31,6 +31,6 @@
     "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "hooks/use-convex-query.js"  ],
   "exclude": ["node_modules"]
 }

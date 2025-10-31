@@ -1,13 +1,14 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+// import { Roboto } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import Header from "@/components/Header";
+import { Toaster } from "sonner";
 
-const roboto = Roboto({ subsets: ["latin"] });
+// const roboto = Roboto({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +27,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-        <body className={`${roboto.className}`}>
+        <body className={``}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -39,6 +40,7 @@ export default function RootLayout({
                 {children}
               </ConvexClientProvider>
             </main>
+            <Toaster richColors />
           </ThemeProvider>
         </body>
       </html>

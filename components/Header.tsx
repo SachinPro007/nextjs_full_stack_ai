@@ -24,6 +24,8 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  if (path.includes("/dashboard")) return null;
+
   return (
     <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4 transition-all duration-300">
       <div
@@ -44,11 +46,11 @@ function Header() {
         >
           <div className="absolute inset-0 bg-linear-to-r from-violet-500/20 to-purple-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           <Image
-            src={"/next.svg"}
+            src={"/logo.png"}
             alt="Logo"
             width={96}
             height={32}
-            className="relative z-10 brightness-0 invert"
+            className="relative z-10"
           />
         </Link>
 

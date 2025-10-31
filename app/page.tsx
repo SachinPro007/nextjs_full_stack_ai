@@ -206,7 +206,7 @@ const Home = () => {
                 {/* Main image container */}
                 <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-linear-to-br from-white/5 to-white/2 backdrop-blur-sm p-4">
                   <Image
-                    src="/banner.png"
+                    src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765"
                     alt="Platform"
                     width={700}
                     height={700}
@@ -708,13 +708,7 @@ const Home = () => {
         <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-              <Image
-                src="/next.svg"
-                alt="Logo"
-                width={120}
-                height={40}
-                className="brightness-0 invert"
-              />
+              <Image src="/logo.png" alt="Logo" width={120} height={40} />
             </div>
 
             <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-400">
@@ -742,7 +736,14 @@ const Home = () => {
             </div>
 
             <p className="text-sm text-gray-500">
-              © 2025 Your Platform. All rights reserved.
+              © 2025 Ezensi. All rights reserved. Developed by{" "}
+              <a
+                href="https://sachinpro.vercel.app/"
+                target="_blank"
+                className="text-purple-700 text-xl underline cursor-pointer hover:text-pink-700"
+              >
+                Sachin
+              </a>
             </p>
           </div>
         </div>
