@@ -77,8 +77,14 @@ function SettingsPage() {
     }
 
     try {
-      await mutate({ username: trimmedUsername });
-      toast.success("Username updated successfully!");
+      const res = (await mutate({ username: trimmedUsername })) as
+        | string
+        | undefined;
+      if (res) {
+        toast.success("Username updated successfully!");
+      } else {
+        toast.error("Username is already taken");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
