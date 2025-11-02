@@ -190,7 +190,6 @@ export default function DashboardLayout({
                     userPreviewMainIdentifier: "font-semibold text-white",
                   },
                 }}
-                afterSignOutUrl="/"
               />
             </div>
           </div>

@@ -1,5 +1,24 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+
+export interface Post {
+  _id: Id<"posts">;
+  _creationTime: number;
+  category?: string | undefined;
+  featuredImage?: string | undefined;
+  publishedAt?: number | undefined;
+  scheduledFor?: number | undefined;
+  createdAt: number;
+  title: string;
+  content: string;
+  status: "draft" | "published";
+  authorId: Id<"users">;
+  tags: string[];
+  updatedAt: number;
+  viewCount: number;
+  likeCount: number;
+}
 
 export default defineSchema({
   // User Table
