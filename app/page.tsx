@@ -206,7 +206,7 @@ const Home = () => {
                 {/* Main image container */}
                 <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-linear-to-br from-white/5 to-white/2 backdrop-blur-sm p-4">
                   <Image
-                    src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765"
+                    src="https://img.freepik.com/premium-vector/ai-powered-tools-illustration-featuring-ai-powered-data-analytics-automated-information-research-mobile-intelligent-interfaces-seo-advertising_2175-36581.jpg?w=1060"
                     alt="Platform"
                     width={700}
                     height={700}

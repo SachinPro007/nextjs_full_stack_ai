@@ -52,7 +52,7 @@ export const keyFeatures = [
       "Content templates library",
     ],
     image:
-      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765",
+      "https://img.freepik.com/free-vector/hand-drawn-rpa-illustration_23-2149243331.jpg?t=st=1762155806~exp=1762159406~hmac=5d7e3cc5a33ba1ce67b293cc8d614f51410e6887627d7217c1de27fbb8071632&w=1060",
   },
   {
     category: "Analytics",
@@ -70,7 +70,7 @@ export const keyFeatures = [
       "Custom reporting",
     ],
     image:
-      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765",
+      "https://img.freepik.com/free-vector/hand-drawn-gathering-data-business_23-2149164010.jpg?t=st=1762156179~exp=1762159779~hmac=4531c53dc1894bba3f735e6481979d2f85f641144cbaab4871e8f09f87f28e39&w=1060",
   },
   {
     category: "Growth",
@@ -88,7 +88,7 @@ export const keyFeatures = [
       "Newsletter integration",
     ],
     image:
-      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765",
+      "https://img.freepik.com/premium-vector/people-icon-illustration_267651-1216.jpg?w=1060",
   },
 ];
 
