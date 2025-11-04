@@ -563,7 +563,7 @@ const Home = () => {
 
                   {/* Quote */}
                   <p className="text-lg text-gray-300 leading-relaxed mb-6">
-                    {/* eslint-disable-next-line */}"{testimonial.quote}"
+                    &quot;{testimonial.quote}&quot;
                   </p>
 
                   {/* Metrics */}
