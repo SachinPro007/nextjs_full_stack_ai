@@ -6,6 +6,7 @@ import { useConvexMutation } from "@/hooks/use-convex-query";
 import { useState } from "react";
 import { Post } from "@/convex/schema";
 import z from "zod/v3";
+import PostContentEditor from "./PostContentEditor";
 
 const postSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
@@ -67,6 +68,7 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
       />
 
       {/* editor */}
+      <PostContentEditor />
 
       {/* Settings dialog*/}
 
