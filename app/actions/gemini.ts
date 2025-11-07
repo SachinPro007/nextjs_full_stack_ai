@@ -6,8 +6,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 interface GenerateFnArgs {
   title: string;
-  category: string;
-  tags: string[];
+  category?: string;
+  tags?: string[];
 }
 interface ImproveFnArgs {
   currentContent: string;

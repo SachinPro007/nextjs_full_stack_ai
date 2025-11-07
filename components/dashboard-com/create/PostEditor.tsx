@@ -27,6 +27,7 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
   const [isSettingsOpen, setIsSettingOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageModalType, setImageModalType] = useState("featured");
+  const [quillRef, setQuillRef] = useState<unknown | null>(null);
 
   const { mutate: createPost, isLoading: isCreating } = useConvexMutation(
     api.posts.createPost,
@@ -36,7 +37,7 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
     api.posts.updatePost,
   );
 
-  useForm({
+  const form = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: initialData?.title || "",
@@ -68,7 +69,14 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
       />
 
       {/* editor */}
-      <PostContentEditor />
+      <PostContentEditor
+        form={form}
+        setQuillRef={setQuillRef}
+        onImageUpload={(type: string) => {
+          setImageModalType(type);
+          setIsImageModalOpen(true);
+        }}
+      />
 
       {/* Settings dialog*/}
 
