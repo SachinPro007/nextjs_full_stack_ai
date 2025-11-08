@@ -7,7 +7,9 @@ import { useState } from "react";
 import { Post } from "@/convex/schema";
 import z from "zod/v3";
 import PostContentEditor from "./PostContentEditor";
+import PostEditorSettings from "./PostEditorSettings";
 
+// zod validation
 const postSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
   content: z.string().min(1, "Title is required"),
@@ -79,6 +81,12 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
       />
 
       {/* Settings dialog*/}
+      <PostEditorSettings
+        form={form}
+        mode={mode}
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingOpen(false)}
+      />
 
       {/* image upload dialog */}
     </div>

@@ -4,21 +4,23 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-interface GenerateFnArgs {
-  title: string;
-  category?: string;
-  tags?: string[];
-}
-interface ImproveFnArgs {
-  currentContent: string;
-  improvementType: string;
-}
+// interface GenerateFnArgs {
+//   title: string;
+//   category?: string;
+//   tags?: string[];
+// }
+// interface ImproveFnArgs {
+//   currentContent: string;
+//   improvementType: string;
+// }
 
 // generating content
-export async function generatBlogContent(args: GenerateFnArgs) {
+export async function generatBlogContent(
+  title: string,
+  category: string = "",
+  tags: string[] = [],
+) {
   try {
-    const { title, tags = [], category = "" } = args;
-
     if (!title || title.trim().length === 0) {
       throw new Error("Title is required to generate content");
     }
@@ -65,6 +67,12 @@ export async function generatBlogContent(args: GenerateFnArgs) {
   } catch (error) {
     if (error instanceof Error) {
       console.log(error.message);
+      if (error.message.includes("429 Too Many Requests")) {
+        return {
+          success: false,
+          error: "Resource exhausted. Please try again later.",
+        };
+      }
 
       return {
         success: false,
@@ -75,9 +83,12 @@ export async function generatBlogContent(args: GenerateFnArgs) {
 }
 
 // improving content
-export async function improveContent(args: ImproveFnArgs) {
+export async function improveContent(
+  currentContent: string,
+  improvementType: string = "enhance",
+) {
   try {
-    const { currentContent, improvementType = "enhance" } = args;
+    // const { currentContent, improvementType = "enhance" } = args;
 
     if (!currentContent || currentContent.trim().length === 0) {
       throw new Error("Content is required for improvement");

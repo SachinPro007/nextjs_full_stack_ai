@@ -20,9 +20,12 @@ interface GetCurrentUser {
 }
 
 function CreatePost() {
+  //geting draft post if exist
   const { data: existingDraft, isLoading: isDraftLoading } = useConvexQuery(
     api.posts.getDraftPost,
   ) as GetDraftPost;
+
+  // geting current logged user
   const { data: currentUser, isLoading: isUserLoading } = useConvexQuery(
     api.users.getCurrentUser,
   ) as GetCurrentUser;
