@@ -19,6 +19,7 @@ import { FieldErrors } from "react-hook-form";
 import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
 import { generatBlogContent, improveContent } from "@/app/actions/gemini";
+import ReactQuill from "react-quill-new";
 
 const QuillWrapper = dynamic(() => import("@/components/other/QuillWrapper"), {
   ssr: false,
@@ -89,8 +90,8 @@ interface PostEditorFnArgs {
     ) => void;
     formState: { errors: FieldErrors };
   };
-  setQuillRef: (ref: unknown) => void;
-  onImageUpload: (type: string) => void;
+  setQuillRef: (ref: ReactQuill | null) => void;
+  onImageUpload: (type: "featured" | "content") => void;
 }
 
 function PostContentEditor({

@@ -3,7 +3,7 @@ import PostEditorHeader from "./PostEditorHeader";
 import { useForm, useWatch } from "react-hook-form";
 import { api } from "@/convex/_generated/api";
 import { useConvexMutation } from "@/hooks/use-convex-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Post } from "@/convex/schema";
 import z from "zod/v3";
 import PostContentEditor, { PostFormData } from "./PostContentEditor";
@@ -11,6 +11,7 @@ import PostEditorSettings from "./PostEditorSettings";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import ImageUploadPopUp from "./ImageUploadPopUp";
+import ReactQuill from "react-quill-new";
 
 // zod validation
 const postSchema = z.object({
@@ -22,6 +23,16 @@ const postSchema = z.object({
   scheduledFor: z.string().optional(),
 });
 
+// types
+export interface ImageDataObj {
+  url: string;
+  originalUrl: string | undefined;
+  fileId: string | undefined;
+  name: string | undefined;
+  width: number | undefined;
+  height: number | undefined;
+}
+
 interface PostEditorFnProp {
   initialData: Post | undefined;
   mode?: "edit" | "create";
@@ -32,8 +43,10 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
   const router = useRouter();
   const [isSettingsOpen, setIsSettingOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [imageModalType, setImageModalType] = useState("featured");
-  const [quillRef, setQuillRef] = useState<unknown | null>(null);
+  const [imageModalType, setImageModalType] = useState<"featured" | "content">(
+    "featured",
+  );
+  const [quillRef, setQuillRef] = useState<ReactQuill | null>(null);
 
   const { mutate: createPost, isLoading: isCreating } = useConvexMutation(
     api.posts.createPost,
@@ -57,7 +70,7 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
     },
   });
 
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, setValue } = form;
   const watchValue = useWatch({ control });
 
   // Submit Post Data
@@ -130,7 +143,23 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
     handleSubmit((data) => onSubmit(data, "schedule"))();
   };
 
-  const handleImageSelect = () => {};
+  const handleImageSelect = (imageData: ImageDataObj) => {
+    if (imageModalType === "featured") {
+      setValue("featuredImage", imageData.url);
+      toast.success("Featured image added");
+    } else if (imageModalType === "content" && quillRef) {
+      const quill = quillRef.getEditor();
+      const range = quill.getSelection();
+
+      const index = range ? range.index : quill.getLength();
+
+      quill.insertEmbed(index, "image", imageData.url);
+      quill.setSelection(index + 1);
+      toast.success("Image inserted!");
+    }
+
+    setIsImageModalOpen(false);
+  };
 
   // Auto-Save for draft
   // useEffect(() => {
@@ -163,7 +192,7 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
       <PostContentEditor
         form={form}
         setQuillRef={setQuillRef}
-        onImageUpload={(type: string) => {
+        onImageUpload={(type: "featured" | "content") => {
           setImageModalType(type);
           setIsImageModalOpen(true);
         }}

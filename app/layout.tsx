@@ -31,7 +31,7 @@ export default function RootLayout({
         theme: dark,
       }}
     >
-      <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
         <body className={``}>
           <ThemeProvider
             attribute="class"
