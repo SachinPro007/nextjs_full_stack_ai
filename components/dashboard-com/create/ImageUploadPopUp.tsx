@@ -18,11 +18,21 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TabsContent } from "@radix-ui/react-tabs";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import z from "zod/v3";
 import { useDropzone } from "react-dropzone";
-import { Check, Loader2, Upload, Wand2 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  FileCheck,
+  ImageIcon,
+  Loader2,
+  Sparkles,
+  UploadIcon,
+  Wand2,
+  Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 // import Image from "next/image";
 import { authenticator } from "@/lib/imagekit";
@@ -159,19 +169,28 @@ function ImageUploadPopUp({
     },
   });
 
-  useEffect(() => {
-    console.log("watchValues", watchValue);
-  }, [watchValue]);
-
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-6xl! h-[90vh]! overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>
-              Upload an image and apply AI-powered trandformations
-            </DialogDescription>
+          {/* Header */}
+          <DialogHeader className="relative p-5">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl blur-xl opacity-50" />
+                <div className="relative w-12 h-12 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-white mb-1">
+                  {title}
+                </DialogTitle>
+                <DialogDescription className="text-gray-400 text-sm">
+                  Upload and apply AI-powered transformations
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
 
           <Tabs
@@ -202,49 +221,99 @@ function ImageUploadPopUp({
 
                 {/* image drop card or loader */}
                 {isUploading ? (
-                  <div className="space-y-4">
-                    <Loader2 className="h-12 w-12 mx-auto animate-spin text-purple-400" />
-                    <p className="text-slate-300">Uploading image...</p>
+                  <div className="text-center space-y-5">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full blur-3xl opacity-50 animate-pulse" />
+                      <Loader2 className="relative w-14 h-14 text-purple-400 animate-spin mx-auto" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-semibold text-white mb-2">
+                        Uploading...
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        Processing your file
+                      </p>
+                    </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <Upload className="h-12 w-12 mx-auto text-slate-400" />
-                    <div>
-                      <p className="text-lg text-white">
-                        {isDragActive
-                          ? "Drop the image here"
-                          : "Drag & drop an image here"}
-                      </p>
-                      <p className="text-sm text-slate-400 mt-2">
-                        or click to select a file (JPG, PNG, WebP, GIF - Max
-                        10MB)
-                      </p>
+                  <div className="text-center space-y-7">
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity" />
+                      <div className="relative w-24 h-24 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <UploadIcon className="w-12 h-12 text-white" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-2xl font-bold text-white mb-2">
+                          {isDragActive ? "Drop it here!" : "Upload Your Image"}
+                        </p>
+                        <p className="text-gray-400 text-base">
+                          Drag and drop or click to browse
+                        </p>
+                      </div>
+
+                      <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
+                        <Zap className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm text-gray-300 font-medium">
+                          Click to select
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-6 pt-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <ImageIcon className="w-4 h-4" />
+                        <span>JPG, PNG, WebP</span>
+                      </div>
+                      <div className="w-px h-4 bg-white/10" />
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <FileCheck className="w-4 h-4" />
+                        <span>Max 10MB</span>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* image uploaded */}
+              {/* Upload Success State */}
               {uploadedImage && (
-                <div className="text-center space-y-4">
-                  <Badge
-                    variant="secondary"
-                    className="bg-green-500/20 text-green-300 border-green-500/30"
-                  >
-                    <Check className="h-3 w-3 mr-1" />
-                    Image uploaded successfully!
-                  </Badge>
-                  <div className="text-sm text-slate-400">
-                    {uploadedImage.width} × {uploadedImage.height} •{" "}
-                    {Math.round(uploadedImage.size! / 1024)}KB
+                <div className="bg-linear-to-br from-emerald-500/10 to-teal-500/10 rounded-2xl p-5 border border-emerald-500/20 backdrop-blur-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="text-white font-semibold text-base">
+                          Upload Successful!
+                        </h4>
+                        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                          Ready
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-400 mb-3">
+                        <span className="truncate max-w-[200px]">
+                          {uploadedImage.name}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          {uploadedImage.width} × {uploadedImage.height}
+                        </span>
+                        <span>•</span>
+                        <span>{Math.round(uploadedImage.size! / 1024)}KB</span>
+                      </div>
+                      <Button
+                        onClick={() => setActiveTab("transform")}
+                        className="bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200"
+                      >
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Transform Image
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </div>
                   </div>
-                  <Button
-                    onClick={() => setActiveTab("transform")}
-                    className="bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  >
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Start Transforming
-                  </Button>
                 </div>
               )}
             </TabsContent>
