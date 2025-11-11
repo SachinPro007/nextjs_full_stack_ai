@@ -1,5 +1,4 @@
 import {
-  Badge,
   FileText,
   LayoutDashboard,
   Menu,
@@ -18,6 +17,7 @@ import { useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
 
 interface SideBarFunProp {
   mobileOpen: boolean;

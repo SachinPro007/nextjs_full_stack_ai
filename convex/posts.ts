@@ -159,3 +159,69 @@ export const updatePost = mutation({
     return args._id;
   },
 });
+
+// Get User All Posts
+export const getUserAllPosts = query({
+  args: {
+    status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
+  },
+  handler: async (ctx, args) => {
+    const user: User = await ctx.runQuery(api.users.getCurrentUser);
+
+    if (!user) {
+      return [];
+    }
+
+    let query = ctx.db
+      .query("posts")
+      .filter((q) => q.eq(q.field("authorId"), user._id));
+
+    // Filter by status if provided
+    if (args.status) {
+      query = query.filter((q) => q.eq(q.field("status"), args.status));
+    }
+
+    const posts = await query.order("desc").collect();
+
+    // add username each post
+    return posts.map((post) => ({
+      ...post,
+      username: user.username,
+    }));
+  },
+});
+
+// Get a single post by Id
+export const getPostById = query({
+  args: { _id: v.id("posts") },
+
+  handler: async (ctx, args) => {
+    await ctx.runQuery(api.users.getCurrentUser);
+
+    return await ctx.db.get(args._id);
+  },
+});
+
+// Delete post
+export const deletePost = mutation({
+  args: {
+    _id: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.runQuery(api.users.getCurrentUser);
+
+    // get the post
+    const post = await ctx.db.get(args._id);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    // Check user owns the post
+    if (post.authorId !== user._id) {
+      throw new Error("Not authorized to delete this post");
+    }
+
+    await ctx.db.delete(args._id);
+    return { success: true };
+  },
+});

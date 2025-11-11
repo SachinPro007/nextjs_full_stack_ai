@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const useConvexQuery = (query) => {
+  // const hasArgs = args.length === 0 ? "skip" : args
+
   const result = useQuery(query);
 
   const [data, setData] = useState(undefined);
