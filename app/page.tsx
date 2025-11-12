@@ -49,7 +49,7 @@ const Home = () => {
       {/* Sophisticated background layers */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-purple-900/20 via-[#030014] to-[#030014]" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+        <div className="absolute inset-0 opacity-20" />
         <div
           className="absolute inset-0 opacity-30"
           style={{
@@ -176,6 +176,7 @@ const Home = () => {
                           alt=""
                           fill
                           className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       </div>
                     ))}

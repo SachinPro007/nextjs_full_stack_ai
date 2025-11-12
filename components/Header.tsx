@@ -50,6 +50,7 @@ function Header() {
             alt="Logo"
             width={96}
             height={32}
+            style={{ width: 96, height: 32 }}
             className="relative z-10"
           />
         </Link>

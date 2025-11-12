@@ -100,6 +100,7 @@ function Sidebar({
               alt="Creatr"
               width={100}
               height={32}
+              style={{ width: 100, height: 32 }}
               className="h-8 w-auto object-contain"
             />
           )}

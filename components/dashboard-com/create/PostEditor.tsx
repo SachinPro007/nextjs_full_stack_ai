@@ -79,7 +79,6 @@ function PostEditor({ initialData, mode = "create" }: PostEditorFnProp) {
     action: "draft" | "publish" | "schedule",
   ) => {
     try {
-      console.log("log in on Submit fun in postEditor");
       const postData = {
         title: data.title,
         content: data.content,
