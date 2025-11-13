@@ -24,7 +24,7 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (path.includes("/dashboard")) return null;
+  if (path !== "/" && path !== "/feed" && path.includes("/")) return null;
 
   return (
     <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4 transition-all duration-300">

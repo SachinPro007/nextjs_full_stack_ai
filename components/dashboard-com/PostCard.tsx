@@ -58,8 +58,6 @@ function PostCard({
   };
   const now = currentTime;
 
-  console.log("rendring in post card component");
-
   const getStatusBadge = () => {
     if (post.status === "published") {
       if (post.scheduledFor && post.scheduledFor > now) {
