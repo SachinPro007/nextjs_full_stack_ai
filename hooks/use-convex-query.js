@@ -2,6 +2,8 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+export const currentTime = Date.now();
+
 export const useConvexQuery = (query, ...args) => {
   const result = useQuery(query, ...args);
 

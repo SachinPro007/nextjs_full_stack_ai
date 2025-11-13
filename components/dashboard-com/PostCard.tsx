@@ -1,5 +1,5 @@
 import { PostWithUsername } from "@/app/dashboard/posts/page";
-import React, { useEffect, useState } from "react";
+import React, { memo, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { useConvexQuery } from "@/hooks/use-convex-query";
+import { currentTime, useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { User as UserType } from "@/convex/users";
 import { cn } from "@/lib/utils";
@@ -51,20 +51,14 @@ function PostCard({
   className = "",
   variant = "default",
 }: PostCardProps) {
-  const [now, setNow] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { data: author } = useConvexQuery(api.users.getCurrentUser) as {
     data: UserType | undefined;
   };
+  const now = currentTime;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now());
-    }, 1000 * 60); // Update every minute
-
-    return () => clearInterval(interval);
-  }, []);
+  console.log("rendring in post card component");
 
   const getStatusBadge = () => {
     if (post.status === "published") {
@@ -128,6 +122,7 @@ function PostCard({
             src={featuredImage}
             alt={post.title}
             fill
+            loading="eager"
             className={cn(
               "object-cover transition-all duration-700",
               imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105",
@@ -326,4 +321,4 @@ function PostCard({
   );
 }
 
-export default PostCard;
+export default memo(PostCard);

@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/convex/_generated/api";
 import { Post } from "@/convex/schema";
-import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
+import {
+  currentTime,
+  useConvexMutation,
+  useConvexQuery,
+} from "@/hooks/use-convex-query";
 import {
   FileText,
   Filter,
@@ -24,7 +28,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
 
@@ -38,8 +42,8 @@ function PostsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [now, setNow] = useState(0);
   const router = useRouter();
+  const now = currentTime;
 
   // Get posts with refetch capability
   const { data: posts, isLoading } = useConvexQuery(
@@ -47,14 +51,6 @@ function PostsPage() {
   ) as { data: PostWithUsername[] | undefined; isLoading: boolean };
 
   const deletePost = useConvexMutation(api.posts.deletePost);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now());
-    }, 1000 * 60); // Update every minute
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Filter posts
   const filteredPosts = useMemo(() => {
