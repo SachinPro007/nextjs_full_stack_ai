@@ -99,7 +99,7 @@ export const IncreamentPostViewCount = mutation({
     // update view count
     await ctx.db.patch(args.postId, { viewCount: post.viewCount + 1 });
 
-    const today = Date.now().toLocaleString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
 
     // Check If already have stats for today
     const existingStats = await ctx.db
@@ -110,7 +110,7 @@ export const IncreamentPostViewCount = mutation({
           q.eq(q.field("date"), today),
         ),
       )
-      .first();
+      .unique();
 
     if (existingStats) {
       // update existing stats
@@ -119,6 +119,7 @@ export const IncreamentPostViewCount = mutation({
         updatedAt: Date.now(),
       });
     } else {
+      // Create new daily stats entry
       await ctx.db.insert("dailyStats", {
         postId: args.postId,
         date: today,

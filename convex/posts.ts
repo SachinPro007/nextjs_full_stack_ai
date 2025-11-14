@@ -3,6 +3,7 @@ import { api } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { User } from "./users";
 
+// types
 interface UpdatedPost {
   title?: string;
   content?: string;
