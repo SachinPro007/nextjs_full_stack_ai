@@ -1,4 +1,3 @@
-import { PostWithUsername } from "@/app/dashboard/posts/page";
 import React, { memo, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
@@ -15,8 +14,8 @@ import {
   Trash2,
   Clock,
   Tag,
-  User,
   BarChart3,
+  User,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import {
@@ -31,13 +30,25 @@ import { currentTime, useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { User as UserType } from "@/convex/users";
 import { cn } from "@/lib/utils";
+import { Post } from "@/convex/schema";
+
+// types
+export interface PostWithAuthor extends Post {
+  username: string;
+  author: {
+    _id: string;
+    name: string;
+    username: string;
+    imageUrl: string;
+  };
+}
 
 interface PostCardProps {
-  post: PostWithUsername;
+  post: PostWithAuthor;
   showActions: boolean;
   showAuthor: boolean;
-  onEdit: (post: PostWithUsername) => void;
-  onDelete: (post: PostWithUsername) => void;
+  onEdit?: (post: PostWithAuthor) => void;
+  onDelete?: (post: PostWithAuthor) => void;
   className?: string;
   variant?: "default" | "compact" | "featured";
 }
@@ -83,8 +94,8 @@ function PostCard({
   };
 
   const getPostUrl = () => {
-    if (post.status === "published" && post.username) {
-      return `/${post.username}/${post._id}`;
+    if (post.status === "published" && post.author.username) {
+      return `/${post.author.username}/${post._id}`;
     }
     return null;
   };

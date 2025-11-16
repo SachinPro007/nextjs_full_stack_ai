@@ -43,7 +43,7 @@ export const toggleFollow = mutation({
 });
 
 // check current user following the user
-export const isFollow = query({
+export const isFollowing = query({
   args: { followingId: v.optional(v.id("users")) },
   handler: async (ctx, args) => {
     const follower = await ctx.runQuery(api.users.getCurrentUser);
@@ -71,7 +71,7 @@ export const isFollow = query({
 
 // get followers count for user
 export const getFollowerCount = query({
-  args: { userId: v.id("users") },
+  args: { userId: v.optional(v.id("users")) },
   handler: async (ctx, args) => {
     const follows = await ctx.db
       .query("follows")

@@ -1,6 +1,6 @@
 "use client";
 
-import PostCard from "@/components/dashboard-com/PostCard";
+import PostCard, { PostWithAuthor } from "@/components/dashboard-com/PostCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/convex/_generated/api";
-import { Post } from "@/convex/schema";
 import {
   currentTime,
   useConvexMutation,
@@ -33,9 +32,6 @@ import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
 
 // types
-export interface PostWithUsername extends Post {
-  username: string;
-}
 
 function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +44,7 @@ function PostsPage() {
   // Get posts with refetch capability
   const { data: posts, isLoading } = useConvexQuery(
     api.posts.getUserAllPosts,
-  ) as { data: PostWithUsername[] | undefined; isLoading: boolean };
+  ) as { data: PostWithAuthor[] | undefined; isLoading: boolean };
 
   const deletePost = useConvexMutation(api.posts.deletePost);
 
@@ -121,7 +117,7 @@ function PostsPage() {
   }, [posts, now]);
 
   // Delete post
-  const handleDeletePost = async (post: PostWithUsername) => {
+  const handleDeletePost = async (post: PostWithAuthor) => {
     if (!window.confirm("Are you sure you want to delete this post?")) {
       return;
     }
@@ -137,7 +133,7 @@ function PostsPage() {
   };
 
   // Edit post
-  const handleEditPost = (post: PostWithUsername) => {
+  const handleEditPost = (post: PostWithAuthor) => {
     router.push(`/dashboard/posts/edit/${post._id}`);
   };
 

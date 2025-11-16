@@ -48,6 +48,7 @@ export const store = mutation({
   },
 });
 
+// get current logged user
 export const getCurrentUser = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -70,6 +71,7 @@ export const getCurrentUser = query({
   },
 });
 
+// update current logged username
 export const updateUsername = mutation({
   args: { username: v.string() },
   handler: async (ctx, args) => {
@@ -106,5 +108,28 @@ export const updateUsername = mutation({
     });
 
     return user._id;
+  },
+});
+
+// Get user by username for public profile
+export const getUserByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("username"), args.username))
+      .unique();
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      _id: user._id,
+      name: user.name,
+      username: user.username,
+      imageUrl: user.imageUrl,
+      createdAt: user.createdAt,
+    };
   },
 });

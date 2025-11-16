@@ -187,7 +187,12 @@ export const getUserAllPosts = query({
     // add username each post
     return posts.map((post) => ({
       ...post,
-      username: user.username,
+      author: {
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        imageUrl: user.imageUrl,
+      },
     }));
   },
 });
