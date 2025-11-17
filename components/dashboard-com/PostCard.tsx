@@ -189,6 +189,7 @@ function PostCard({
                 )}
               </div>
 
+              {/* Post title */}
               <Link
                 href={publicUrl || "#"}
                 className={!publicUrl ? "pointer-events-none" : "block"}
@@ -254,9 +255,10 @@ function PostCard({
 
           {/* Description/Excerpt */}
           {post.content && (
-            <p className="text-slate-300 text-sm leading-relaxed line-clamp-2">
-              {post.content}
-            </p>
+            <div
+              className="text-slate-300 text-sm leading-relaxed line-clamp-2"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           )}
 
           {/* Tags */}

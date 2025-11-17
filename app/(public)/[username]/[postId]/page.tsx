@@ -9,10 +9,40 @@ import { User } from "@/convex/users";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Eye, Heart, MessageCircle } from "lucide-react";
+import {
+  Calendar,
+  Eye,
+  Heart,
+  Loader2,
+  MessageCircle,
+  Send,
+  Trash2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { BarLoader } from "react-spinners";
+
+// types
+interface CommentWithAuthor {
+  author: {
+    _id: string;
+    name: string;
+    username: string | undefined;
+    imageUrl: string | undefined;
+  } | null;
+  _id: string;
+  _creationTime: number;
+  authorId?: string | undefined;
+  authorEmail?: string | undefined;
+  createdAt: number;
+  content: string;
+  status: "approved" | "pending" | "rejected";
+  postId: string;
+  authorName: string;
+}
 
 interface UserPostFnProp {
   params: Usable<{ username: string; postId: string }>;
@@ -41,13 +71,15 @@ function UserPostPage({ params }: UserPostFnProp) {
   const { data: hasLiked } = useConvexQuery(api.likes.hasUserLiked, {
     postId,
   }) as { data: boolean | undefined };
+
   const toggleLike = useConvexMutation(api.likes.toggleLike);
 
   // Get current post comments
   const { data: comments, isLoading: commentsLoading } = useConvexQuery(
     api.comments.getPostComments,
     { postId },
-  );
+  ) as { data: CommentWithAuthor[] | undefined; isLoading: boolean };
+
   const { mutate: addComment, isLoading: isSubmittingComment } =
     useConvexMutation(api.comments.addComment);
   const deleteComment = useConvexMutation(api.comments.deleteComment);
@@ -79,22 +111,62 @@ function UserPostPage({ params }: UserPostFnProp) {
   }
 
   const handleLikeToggle = () => {
+    if (!currentUser) {
+      toast.error("Please sign in to like posts");
+      return;
+    }
+
     try {
       toggleLike.mutate({ postId });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
+        return;
+      }
+      toast.error("Failed to update like");
+    }
+  };
+
+  const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!currentUser) {
+      toast.error("Please sign in to comment");
+      return;
+    }
+
+    if (!commentContent.trim()) {
+      toast.error("Comment cannot be empty");
+      return;
+    }
+
+    try {
+      await addComment({ postId, comment: commentContent.trim() });
+      setCommentContent("");
+      toast.success("Comment added!");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Failed to add comment");
       }
     }
   };
 
-  console.log(comments);
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      deleteComment.mutate({ commentId });
+      toast.success("Comment deleted");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Failed to delete comment");
+      }
+    }
+  };
 
   return (
     <>
       <PublicHeader link={`/${username}`} title="Back to profile" />
 
       <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Article */}
         <article className="space-y-8">
           {/* Featured Image */}
           {post.featuredImage && (
@@ -111,6 +183,7 @@ function UserPostPage({ params }: UserPostFnProp) {
           )}
 
           <div className="space-y-4">
+            {/* post title */}
             <h1 className="text-4xl md:text-5xl font-bold gradient-text-primary">
               {post.title}
             </h1>
@@ -145,15 +218,17 @@ function UserPostPage({ params }: UserPostFnProp) {
                   </div>
                 </div>
               </Link>
+
               {/* post date or view */}
               <div className="text-right text-sm text-slate-400">
                 <div className="flex items-center gap-1 mb-1">
                   <Calendar className="h-4 w-4" />
-                  {/* {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })} */}
+                  {typeof post.publishedAt !== "undefined" &&
+                    new Date(post.publishedAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                 </div>
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
@@ -161,6 +236,7 @@ function UserPostPage({ params }: UserPostFnProp) {
                 </div>
               </div>
             </div>
+
             {/* post tags */}
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -200,10 +276,141 @@ function UserPostPage({ params }: UserPostFnProp) {
 
             <div className="flex items-center gap-2 text-slate-400">
               <MessageCircle className="h-5 w-5" />
-              {/* {comments?.length || 0} comments */}
+              {comments?.length || 0} comments
             </div>
           </div>
         </article>
+
+        {/* comment section */}
+        <div className="mt-12 space-y-6">
+          <h2 className="text-2xl font-bold text-white">Comments</h2>
+
+          {/* Adding comment */}
+          {currentUser ? (
+            <Card className="card-glass">
+              <CardContent className="p-6">
+                <form onSubmit={handleCommentSubmit} className="space-y-4">
+                  <Textarea
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    placeholder="Write a comment..."
+                    className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 resize-none"
+                    rows={3}
+                    maxLength={1000}
+                  />
+
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-slate-500">
+                      {commentContent.length}/1000 characters
+                    </p>
+                    <Button
+                      type="submit"
+                      disabled={isSubmittingComment || !commentContent.trim()}
+                      variant="default"
+                    >
+                      {isSubmittingComment ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
+                      Post Comment
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="card-glass">
+              <CardContent className="p-6 text-center">
+                <p className="text-slate-400 mb-4">
+                  Sign in to join the conversation
+                </p>
+                <Link href="/sign-in">
+                  <Button variant="default">Sign In</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* display comment */}
+          {commentsLoading ? (
+            <BarLoader width={"100%"} color="#D8B4FE" />
+          ) : comments && comments.length > 0 ? (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <Card key={comment._id} className="card-glass">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative w-8 h-8">
+                          {comment.author?.imageUrl ? (
+                            <Image
+                              src={comment.author.imageUrl}
+                              alt={comment.author.name}
+                              fill
+                              className="rounded-full object-cover"
+                              sizes="32px"
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center text-sm font-bold">
+                              {comment.author?.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <p className="font-medium text-white">
+                            {comment.author?.name || "Anonymous"}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {new Date(comment.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* delete button */}
+                      {currentUser &&
+                        comment.author &&
+                        (currentUser._id === comment.authorId ||
+                          currentUser._id === post.authorId) && (
+                          <Button
+                            onClick={() => handleDeleteComment(comment._id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-400 hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                    </div>
+
+                    <p className="text-slate-300 whitespace-pre-wrap">
+                      {comment.content}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="card-glass">
+              <CardContent className="text-center py-8">
+                <MessageCircle className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+                <p className="text-slate-400">No comments yet</p>
+                <p className="text-slate-500 text-sm mt-1">
+                  Be the first to share your thoughts!
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         {/* Custom prose styles */}
         <style jsx global>{`

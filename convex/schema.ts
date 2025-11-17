@@ -7,7 +7,7 @@ export interface Post {
   _creationTime: number;
   category?: string | undefined;
   featuredImage?: string | undefined;
-  publishedAt?: number | undefined;
+  publishedAt?: number | string | undefined;
   scheduledFor?: number | undefined;
   createdAt: number;
   title: string;
