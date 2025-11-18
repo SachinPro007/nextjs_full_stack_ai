@@ -148,14 +148,16 @@ const Home = () => {
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-14 px-8 border-2 border-white/20 hover:border-purple-500/50 hover:bg-purple-500/10 rounded-xl backdrop-blur-sm transition-all"
-                >
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  Watch Demo
-                </Button>
+                <Link href={"/feed"}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-14 px-8 border-2 border-white/20 hover:border-purple-500/50 hover:bg-purple-500/10 rounded-xl backdrop-blur-sm transition-all"
+                  >
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    Explore the Feed
+                  </Button>
+                </Link>
               </div>
 
               {/* Social proof compact */}

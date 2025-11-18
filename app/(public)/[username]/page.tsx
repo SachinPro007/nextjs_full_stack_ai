@@ -9,9 +9,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Calendar, UserCheck, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import { User } from "@/convex/users";
 import { Card, CardContent } from "@/components/ui/card";
 import PostCard, { PostWithAuthor } from "@/components/dashboard-com/PostCard";
+import { useUser } from "@clerk/nextjs";
 
 // types
 interface UserProfileFnProp {
@@ -36,9 +36,7 @@ function UserProfilePage({ params }: UserProfileFnProp) {
   const { username } = React.use(params);
 
   // get current logged user
-  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
-    data: User | undefined;
-  };
+  const { user: currentUser } = useUser();
 
   // get profile user
   const {

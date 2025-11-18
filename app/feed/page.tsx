@@ -10,14 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-// import { User } from "@clerk/nextjs/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "@/convex/users";
+import { useUser } from "@clerk/nextjs";
 
 function Feed() {
-  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
-    data: User | undefined;
-  };
+  const { user: currentUser } = useUser();
+  console.log(currentUser);
+
+  // const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
+  //   data: User | undefined;
+  // };
   const [activeTab, setActiveTab] = useState<"feed" | "trending">("feed");
 
   // Infinite scroll detection
@@ -114,14 +117,14 @@ function Feed() {
                   {currentUser.imageUrl ? (
                     <Image
                       src={currentUser.imageUrl}
-                      alt={currentUser.name || "User"}
+                      alt={currentUser.firstName || "User"}
                       fill
                       className="rounded-full object-cover"
                       sizes="40px"
                     />
                   ) : (
                     <div className="w-full h-full rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center text-sm font-bold">
-                      {(currentUser.name || "U").charAt(0).toUpperCase()}
+                      {(currentUser.firstName || "U").charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>

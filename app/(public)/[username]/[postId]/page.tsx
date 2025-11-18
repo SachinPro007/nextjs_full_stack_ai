@@ -5,7 +5,6 @@ import PublicHeader from "../_components/PublicHeader";
 import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { PostWithAuthor } from "@/components/dashboard-com/PostCard";
-import { User } from "@/convex/users";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +23,7 @@ import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { BarLoader } from "react-spinners";
+import { useUser } from "@clerk/nextjs";
 
 // types
 interface CommentWithAuthor {
@@ -50,9 +50,10 @@ interface UserPostFnProp {
 
 function UserPostPage({ params }: UserPostFnProp) {
   const { username, postId } = React.use(params);
-  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
-    data: User | undefined;
-  };
+  const { user: currentUser } = useUser();
+  // const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
+  //   data: User | undefined;
+  // };
 
   const [commentContent, setCommentContent] = useState("");
 
@@ -379,8 +380,8 @@ function UserPostPage({ params }: UserPostFnProp) {
                       {/* delete button */}
                       {currentUser &&
                         comment.author &&
-                        (currentUser._id === comment.authorId ||
-                          currentUser._id === post.authorId) && (
+                        (currentUser.id === comment.authorId ||
+                          currentUser.id === post.authorId) && (
                           <Button
                             onClick={() => handleDeleteComment(comment._id)}
                             variant="ghost"

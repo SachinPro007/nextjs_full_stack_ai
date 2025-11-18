@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { User } from "./users";
 
 export const getFeed = query({
   args: { limit: v.optional(v.number()) },
@@ -51,29 +52,32 @@ export const getSuggestedUsers = query({
     const identity = await ctx.auth.getUserIdentity();
     const limit = args.limit || 10;
 
-    const user = await ctx.db
-      .query("users")
-      .filter((q) =>
-        q.eq(q.field("tokenIdentifier"), identity?.tokenIdentifier),
-      )
-      .unique();
+    let currentUser: User | null = null;
+    let followedUserIds: string[] = [];
 
-    if (!user) {
-      return;
+    if (identity) {
+      currentUser = await ctx.db
+        .query("users")
+        .filter((q) =>
+          q.eq(q.field("tokenIdentifier"), identity?.tokenIdentifier),
+        )
+        .unique();
+
+      if (currentUser) {
+        // Get following users
+        const follows = await ctx.db
+          .query("follows")
+          .filter((q) => q.eq(q.field("followerId"), currentUser?._id))
+          .collect();
+
+        followedUserIds = follows.map((follow) => follow.followingId);
+      }
     }
-
-    // Get following users
-    const follows = await ctx.db
-      .query("follows")
-      .filter((q) => q.eq(q.field("followerId"), user._id))
-      .collect();
-
-    const followedUserIds = follows.map((follow) => follow.followingId);
 
     // Get all users
     const allUsers = await ctx.db
       .query("users")
-      .filter((q) => q.neq(q.field("_id"), user._id || ""))
+      .filter((q) => q.neq(q.field("_id"), currentUser?._id || ""))
       .collect();
 
     // filter not following users

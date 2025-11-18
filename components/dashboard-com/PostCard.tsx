@@ -26,9 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { currentTime, useConvexQuery } from "@/hooks/use-convex-query";
-import { api } from "@/convex/_generated/api";
-import { User as UserType } from "@/convex/users";
+import { currentTime } from "@/hooks/use-convex-query";
 import { cn } from "@/lib/utils";
 import { Post } from "@/convex/schema";
 
@@ -64,9 +62,7 @@ function PostCard({
 }: PostCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { data: author } = useConvexQuery(api.users.getCurrentUser) as {
-    data: UserType | undefined;
-  };
+
   const now = currentTime;
 
   const getStatusBadge = () => {
@@ -178,12 +174,14 @@ function PostCard({
                 )}
 
                 {/* Author */}
-                {showAuthor && author && (
+                {showAuthor && post.author && (
                   <div className="flex items-center gap-2 text-sm text-slate-400">
                     <User className="h-3 w-3" />
-                    <span>{author.name}</span>
-                    {author.username && (
-                      <span className="text-slate-500">@{author.username}</span>
+                    <span>{post.author.name}</span>
+                    {post.author.username && (
+                      <span className="text-slate-500">
+                        @{post.author.username}
+                      </span>
                     )}
                   </div>
                 )}

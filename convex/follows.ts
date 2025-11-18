@@ -46,10 +46,13 @@ export const toggleFollow = mutation({
 export const isFollowing = query({
   args: { followingId: v.optional(v.id("users")) },
   handler: async (ctx, args) => {
-    const follower = await ctx.runQuery(api.users.getCurrentUser);
-    if (!follower) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
       return false;
     }
+
+    const follower = await ctx.runQuery(api.users.getCurrentUser);
 
     const follow = await ctx.db
       .query("follows")

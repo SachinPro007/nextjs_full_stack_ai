@@ -55,6 +55,11 @@ export const hasUserLiked = query({
     postId: v.id("posts"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return false;
+    }
+
     const user = await ctx.runQuery(api.users.getCurrentUser);
 
     const likeExist = await ctx.db
