@@ -5,7 +5,7 @@ import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { BarLoader } from "react-spinners";
 import { Button } from "./ui/button";
 import { LayoutDashboard, Sparkles } from "lucide-react";
@@ -15,7 +15,6 @@ function Header() {
   const { isLoading, isAuthenticated } = useStoreUser();
   const path = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,13 +23,6 @@ function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Redirect authenticated users form landing page to feed
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && path === "/") {
-      router.push("/feed");
-    }
-  }, [isLoading, isAuthenticated, path, router]);
 
   // Header show only home or feed
   if (path !== "/" && path !== "/feed" && path.includes("/")) {

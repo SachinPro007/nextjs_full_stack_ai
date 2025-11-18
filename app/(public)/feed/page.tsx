@@ -16,7 +16,6 @@ import { useUser } from "@clerk/nextjs";
 
 function Feed() {
   const { user: currentUser } = useUser();
-  console.log(currentUser);
 
   // const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
   //   data: User | undefined;

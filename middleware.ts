@@ -11,6 +11,11 @@ export default clerkMiddleware(async (auth, req) => {
     return redirectToSignIn();
   }
 
+  // Redirect authenticated users from landing page to feed
+  if (userId && req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/feed", req.nextUrl.origin));
+  }
+
   return NextResponse.next();
 });
 
