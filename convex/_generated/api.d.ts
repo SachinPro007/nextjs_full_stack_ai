@@ -9,6 +9,7 @@
  */
 
 import type * as comments from "../comments.js";
+import type * as dashboard from "../dashboard.js";
 import type * as feed from "../feed.js";
 import type * as follows from "../follows.js";
 import type * as likes from "../likes.js";
@@ -32,6 +33,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   comments: typeof comments;
+  dashboard: typeof dashboard;
   feed: typeof feed;
   follows: typeof follows;
   likes: typeof likes;
