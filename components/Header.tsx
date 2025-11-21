@@ -24,143 +24,131 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Header show only home or feed
+  // LOGIC: Header show only home or feed (KEPT EXACTLY THE SAME)
   if (path !== "/" && path !== "/feed" && path.includes("/")) {
     return null;
   }
 
   return (
-    <header className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4 transition-all duration-300">
-      <div
-        className={`
-          h-16 backdrop-blur-xl bg-linear-to-r from-white/15 via-white/10 to-white/15 
-          border border-white/30 rounded-full px-4 sm:px-6 py-3.5
-          flex items-center justify-between gap-4
-          shadow-[0_8px_32px_0_rgba(108,71,255,0.15)]
-          transition-all duration-300 ease-out
-          ${scrolled ? "shadow-[0_8px_40px_0_rgba(108,71,255,0.25)] scale-[0.98]" : "hover:shadow-[0_8px_40px_0_rgba(108,71,255,0.2)]"}
-          group
-        `}
-      >
-        {/* Logo/Home Link with glow effect */}
-        <Link
-          href={isAuthenticated ? "/feed" : "/"}
-          className="relative flex items-center gap-2 transition-transform hover:scale-105"
+    <header
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
+        scrolled ? "py-2" : "py-4"
+      }`}
+    >
+      {/* CONTAINER: Changed from simple pill to a 'Floating Island' aesthetic */}
+      <div className="container mx-auto max-w-6xl px-4">
+        <div
+          className={`
+            relative flex items-center justify-between px-4 py-3 md:px-6
+            rounded-2xl border transition-all duration-500
+            ${
+              scrolled
+                ? "bg-black/80 backdrop-blur-xl border-white/10 shadow-2xl shadow-indigo-500/10"
+                : "bg-black/40 backdrop-blur-lg border-white/5 shadow-lg"
+            }
+          `}
         >
-          <div className="absolute inset-0 bg-linear-to-r from-violet-500/20 to-purple-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Image
-            src={"/logo.png"}
-            alt="Logo"
-            width={96}
-            height={32}
-            style={{ width: 96, height: 32 }}
-            className="relative z-10"
-          />
-        </Link>
+          {/* GLOW EFFECT: A subtle gradient orb behind the logo */}
+          <div className="absolute left-10 top-1/2 -translate-y-1/2 w-24 h-24 bg-indigo-500/20 blur-2xl rounded-full pointer-events-none" />
 
-        {/* Nav Links with enhanced hover effects */}
-        {path === "/" && (
-          <nav className="hidden lg:flex space-x-6 flex-1 justify-center text-sm font-medium">
-            <Link
-              href="#features"
-              className="relative text-white/90 hover:text-white transition-all duration-200 group/link"
-            >
-              <span className="relative z-10">Features</span>
-              <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-linear-to-r from-violet-400 to-purple-400 scale-x-0 group-hover/link:scale-x-100 transition-transform origin-left" />
-            </Link>
-            <Link
-              href="#testimonials"
-              className="relative text-white/90 hover:text-white transition-all duration-200 group/link"
-            >
-              <span className="relative z-10">Testimonials</span>
-              <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-linear-to-r from-violet-400 to-purple-400 scale-x-0 group-hover/link:scale-x-100 transition-transform origin-left" />
-            </Link>
-          </nav>
-        )}
+          {/* LOGO SECTION */}
+          <Link
+            href={isAuthenticated ? "/feed" : "/"}
+            className="relative flex items-center gap-3 group z-10"
+          >
+            <Image
+              src={"/logo.png"}
+              alt="Logo"
+              width={96}
+              height={32}
+              className="relative w-full h-full object-contain drop-shadow-lg"
+            />
+          </Link>
 
-        {/* Auth Actions with enhanced styling */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          <Unauthenticated>
-            <SignInButton>
-              <Button
-                variant="ghost"
-                className="hidden sm:inline-flex text-white/90 hover:text-white hover:bg-white/10 transition-all"
+          {/* NAV LINKS: Changed to 'Pill Tabs' style */}
+          {path === "/" && (
+            <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+              <Link
+                href="#features"
+                className="px-4 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
               >
-                Sign In
-              </Button>
-            </SignInButton>
-            <SignUpButton>
-              <button
-                className="
-                relative overflow-hidden
-                bg-linear-to-r from-[#6c47ff] to-[#7c3aed]
-                hover:from-[#5a39e8] hover:to-[#6d28d9]
-                transition-all duration-300
-                text-white rounded-full font-semibold text-sm sm:text-base 
-                h-10 px-5 sm:h-10 sm:px-6 
-                cursor-pointer
-                shadow-lg shadow-violet-500/30
-                hover:shadow-xl hover:shadow-violet-500/40
-                hover:scale-105
-                active:scale-95
-                group/btn
-              "
+                Features
+              </Link>
+              <Link
+                href="#testimonials"
+                className="px-4 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
               >
-                <span className="relative z-10 flex items-center gap-1.5">
-                  <Sparkles className="h-4 w-4 group-hover/btn:rotate-12 transition-transform" />
-                  Sign Up
-                </span>
-                <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
-              </button>
-            </SignUpButton>
-          </Unauthenticated>
+                Testimonials
+              </Link>
+            </nav>
+          )}
 
-          <Authenticated>
-            {/* Enhanced Dashboard Button */}
-            <Link href="/dashboard" className="flex items-center">
-              <Button
-                variant="outline"
-                className="
-                  hidden sm:flex whitespace-nowrap
-                  border-white/30 bg-white/5 hover:bg-white/10
-                  text-white/90 hover:text-white
-                  backdrop-blur-sm
-                  transition-all duration-200
-                  hover:border-violet-400/50
-                  hover:shadow-lg hover:shadow-violet-500/20
-                  group/dash
-                "
-              >
-                <LayoutDashboard className="h-4 w-4 group-hover/dash:rotate-[-5deg] transition-transform" />
-                <span className="hidden md:inline ml-2">Dashboard</span>
-              </Button>
-            </Link>
+          {/* AUTH ACTIONS: Totally redesigned buttons */}
+          <div className="flex items-center gap-3 z-10">
+            <Unauthenticated>
+              <SignInButton>
+                <Button
+                  variant="ghost"
+                  className="hidden sm:inline-flex h-9 px-4 text-zinc-400 hover:text-white hover:bg-transparent font-medium text-sm tracking-wide hover:underline decoration-indigo-500 underline-offset-4"
+                >
+                  Log in
+                </Button>
+              </SignInButton>
 
-            {/* User Profile with enhanced container */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-linear-to-r from-violet-500/30 to-purple-500/30 blur-md rounded-full opacity-0 hover:opacity-100 transition-opacity" />
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox:
-                      "w-9 h-9 ring-2 ring-white/20 hover:ring-violet-400/50 transition-all",
-                  },
+              <SignUpButton>
+                {/* BUTTON DESIGN: 'Shining Metal' Look */}
+                <button className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all duration-300 hover:bg-indigo-50 hover:w-auto hover:scale-105">
+                  <span className="mr-2 size-4 transition-transform group-hover:-translate-x-1">
+                    <Sparkles className="w-full h-full fill-indigo-500 text-indigo-600" />
+                  </span>
+                  <span className="text-sm font-bold tracking-tight">
+                    Get Started
+                  </span>
+                  <div className="absolute inset-0 -z-10 bg-linear-to-r from-indigo-400 via-purple-400 to-indigo-400 opacity-0 transition-opacity duration-500 group-hover:opacity-10 group-active:opacity-20" />
+                </button>
+              </SignUpButton>
+            </Unauthenticated>
+
+            <Authenticated>
+              <Link href="/dashboard">
+                <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-indigo-500/50 transition-all duration-300 group">
+                  <LayoutDashboard className="w-3.5 h-3.5 text-zinc-500 group-hover:text-indigo-400 transition-colors" />
+                  <span>Dashboard</span>
+                </button>
+              </Link>
+
+              {/* AVATAR: Added a ring container */}
+              <div className="ml-2 p-0.5 rounded-full bg-linear-to-b from-white/20 to-transparent">
+                <div className="p-px bg-black rounded-full">
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-8 h-8 rounded-full",
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            </Authenticated>
+          </div>
+
+          {/* LOADING BAR: Moved to a 'Cyber Line' at the bottom of the container */}
+          {isLoading && (
+            <div className="absolute bottom-0 left-4 right-4 h-px overflow-hidden">
+              <div className="absolute inset-0 bg-indigo-500/20" />
+              <BarLoader
+                width={"100%"}
+                color="#818cf8"
+                height={2}
+                cssOverride={{
+                  borderRadius: "100px",
+                  backgroundColor: "transparent",
                 }}
               />
             </div>
-          </Authenticated>
+          )}
         </div>
-
-        {/* Enhanced Loading Indicator */}
-        {isLoading && (
-          <div className="fixed bottom-0 left-0 w-full z-40 flex justify-center">
-            <div className="relative w-[95%]">
-              <BarLoader width={"100%"} color="#A78BFA" height={3} />
-              <div className="absolute inset-0 bg-linear-to-r from-transparent via-violet-400/50 to-transparent blur-sm" />
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );

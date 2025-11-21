@@ -98,17 +98,16 @@ export const getTrendingPosts = query({
 
     const allPosts = await ctx.db
       .query("posts")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "published"),
-          q.eq(q.field("publishedAt"), weekAgo),
-        ),
-      )
+      .filter((q) => q.eq(q.field("status"), "published"))
       .collect();
 
     // sort trending posts
     const trendingPosts = allPosts
-      .sort((a, b) => b.viewCount - a.viewCount)
+      .filter((post) => post.publishedAt! > weekAgo)
+      .sort(
+        (a, b) =>
+          b.viewCount + b.likeCount * 3 - (a.viewCount + a.likeCount * 3),
+      )
       .slice(0, limit);
 
     // add authors info

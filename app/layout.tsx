@@ -1,14 +1,23 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
-// import { Roboto } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { BackgroundWrapper } from "@/components/ui/background-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import Header from "@/components/Header";
 import { Toaster } from "sonner";
 
-// const roboto = Roboto({ subsets: ["latin"] });
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +41,9 @@ export default function RootLayout({
       }}
     >
       <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-        <body className={``}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -41,8 +52,10 @@ export default function RootLayout({
           >
             <main className="min-h-screen bg-[#030014] text-white overflow-hidden">
               <ConvexClientProvider>
-                <Header />
-                {children}
+                <BackgroundWrapper>
+                  <Header />
+                  {children}
+                </BackgroundWrapper>
               </ConvexClientProvider>
             </main>
             <Toaster richColors />

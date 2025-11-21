@@ -1,260 +1,204 @@
 import {
   Zap,
   Shield,
-  Rocket,
-  Users,
-  TrendingUp,
-  BarChart3,
-  PenTool,
-  Calendar,
-  Search,
-  ImageIcon,
   Globe,
-  Lightbulb,
-  Target,
-  Workflow,
   Database,
-  Lock,
-  Gauge,
-  Palette,
   Code,
+  Sparkles,
+  Layout,
+  Bot,
+  Terminal,
+  Fingerprint,
+  Repeat,
 } from "lucide-react";
 
 export const heroFeatures = [
-  { icon: Zap, text: "10x faster content creation" },
-  { icon: Target, text: "AI-powered insights" },
-  { icon: TrendingUp, text: "Proven growth strategies" },
+  { icon: Bot, text: "Powered by Google Gemini" },
+  { icon: Database, text: "Real-time Convex DB" },
+  { icon: Fingerprint, text: "Secure Clerk Auth" },
 ];
 
 export const platforms = [
-  { name: "AI Writing", icon: PenTool },
-  { name: "Analytics", icon: BarChart3 },
-  { name: "Automation", icon: Workflow },
-  { name: "Community", icon: Users },
-  { name: "Publishing", icon: Globe },
-  { name: "Security", icon: Shield },
+  { name: "Next.js 16", icon: Globe },
+  { name: "Convex", icon: Database },
+  { name: "Clerk", icon: Shield },
+  { name: "Tailwind v4", icon: Layout },
+  { name: "TypeScript", icon: Code },
+  { name: "Gemini AI", icon: Sparkles },
 ];
 
 export const keyFeatures = [
   {
-    category: "Content Creation",
-    title: "AI-Powered Writing Studio",
+    category: "Core Engine",
+    title: "Google Gemini Powered Editor",
     description:
-      "Transform ideas into compelling narratives with our advanced AI engine. Get real-time suggestions, tone adjustments, and SEO optimization.",
-    icon: PenTool,
-    gradient: "from-indigo-500 via-purple-500 to-pink-500",
+      "Experience the future of writing. Our editor integrates Google's latest GenAI models to help you draft, edit, and refine content in milliseconds.",
+    icon: Bot,
+    gradient: "from-blue-500 via-indigo-500 to-violet-500",
     features: [
-      "GPT-4 powered suggestions",
-      "Real-time grammar & style",
-      "SEO optimization engine",
-      "Multi-language support",
-      "Plagiarism detection",
-      "Content templates library",
+      "Context-aware text generation",
+      "Automatic tone adjustment",
+      "Grammar & syntax correction",
+      "One-click summarization",
+      "SEO-optimized suggestions",
+      "Real-time collaboration",
     ],
+    // Keep your existing image or use a placeholder for the editor UI
     image:
-      "https://img.freepik.com/free-vector/hand-drawn-rpa-illustration_23-2149243331.jpg?t=st=1762155806~exp=1762159406~hmac=5d7e3cc5a33ba1ce67b293cc8d614f51410e6887627d7217c1de27fbb8071632&w=1060",
+      "https://img.freepik.com/free-vector/artificial-intelligence-concept-illustration_114360-7970.jpg?w=1060",
   },
   {
-    category: "Analytics",
-    title: "Deep Performance Insights",
+    category: "Backend Architecture",
+    title: "Real-Time Sync with Convex",
     description:
-      "Understand what drives engagement with comprehensive analytics. Track every metric that matters and make data-driven decisions.",
-    icon: BarChart3,
-    gradient: "from-cyan-500 via-blue-500 to-indigo-500",
+      "Forget manual refreshing. Built on Convex, Ezensi syncs data instantly across all clients. Write on one device, see it on another.",
+    icon: Database,
+    gradient: "from-orange-500 via-red-500 to-yellow-500",
     features: [
-      "Real-time view tracking",
-      "Engagement heatmaps",
-      "Audience demographics",
-      "Content performance AI",
-      "Competitor analysis",
-      "Custom reporting",
+      "End-to-end type safety",
+      "Real-time subscriptions",
+      "Automatic caching",
+      "Optimistic UI updates",
+      "Serverless functions",
+      "Zero-config backend",
     ],
     image:
-      "https://img.freepik.com/free-vector/hand-drawn-gathering-data-business_23-2149164010.jpg?t=st=1762156179~exp=1762159779~hmac=4531c53dc1894bba3f735e6481979d2f85f641144cbaab4871e8f09f87f28e39&w=1060",
+      "https://img.freepik.com/free-vector/server-room-concept-illustration_114360-4582.jpg?w=1060",
   },
   {
-    category: "Growth",
-    title: "Audience Building Engine",
+    category: "Security",
+    title: "Enterprise-Grade Auth",
     description:
-      "Grow your reach exponentially with intelligent distribution and community management tools designed for modern creators.",
-    icon: Users,
+      "Secured by Clerk. We handle user sessions, multi-factor authentication, and route protection so you don't have to worry about data breaches.",
+    icon: Shield,
     gradient: "from-emerald-500 via-teal-500 to-cyan-500",
     features: [
-      "Smart content distribution",
-      "Follower growth automation",
-      "Engagement optimizer",
-      "Community moderation",
-      "Influencer collaboration",
-      "Newsletter integration",
+      "Social logins (Google, GitHub)",
+      "Multi-factor authentication",
+      "Session management",
+      "User profile customization",
+      "Role-based access control",
+      "Bot protection",
     ],
     image:
-      "https://img.freepik.com/premium-vector/people-icon-illustration_267651-1216.jpg?w=1060",
+      "https://img.freepik.com/free-vector/secure-login-concept-illustration_114360-4685.jpg?w=1060",
   },
 ];
 
 export const advancedCapabilities = [
   {
-    icon: ImageIcon,
-    title: "Advanced Media Studio",
-    desc: "Professional image editing with AI background removal, smart cropping, filters, and text overlays.",
+    icon: Zap,
+    title: "Instant Deployments",
+    desc: "Optimized for Vercel Edge Network with Next.js 16 capabilities.",
   },
   {
-    icon: Calendar,
-    title: "Smart Scheduling",
-    desc: "AI-powered optimal posting times, content calendar, and automatic publishing across platforms.",
+    icon: Terminal,
+    title: "Type-Safe API",
+    desc: "Full TypeScript support from database schema to frontend components.",
   },
   {
-    icon: Workflow,
-    title: "Automation Workflows",
-    desc: "Set up automated content pipelines, cross-posting, and engagement responses.",
+    icon: Repeat,
+    title: "Reactive UI",
+    desc: "Built with React 19 and Convex to handle state updates instantly.",
   },
   {
-    icon: Search,
-    title: "Content Discovery",
-    desc: "Curated feed algorithm, trending topics, and personalized content recommendations.",
+    icon: Layout,
+    title: "Responsive Design",
+    desc: "Mobile-first UI built with Tailwind CSS v4 and Radix Primitives.",
   },
   {
-    icon: Database,
-    title: "Content Library",
-    desc: "Organize, tag, and search through your entire content archive with AI-powered search.",
-  },
-  {
-    icon: Lock,
-    title: "Enterprise Security",
-    desc: "Bank-level encryption, 2FA, role-based access, and compliance certifications.",
-  },
-  {
-    icon: Gauge,
-    title: "Performance Optimization",
-    desc: "Lightning-fast loading, CDN delivery, and optimized media serving worldwide.",
+    icon: Sparkles,
+    title: "AI Image Gen",
+    desc: "Generate cover images for your blogs using integrated AI tools.",
   },
   {
     icon: Code,
-    title: "Developer API",
-    desc: "RESTful API, webhooks, and SDK for custom integrations and automation.",
-  },
-  {
-    icon: Palette,
-    title: "Brand Customization",
-    desc: "Custom domains, white-labeling, brand kits, and design system management.",
+    title: "Modern Stack",
+    desc: "Leveraging the latest features of Next.js App Router and Server Actions.",
   },
 ];
 
 export const stats = [
-  { number: "50K+", label: "Active Creators", sublabel: "Growing daily" },
-  { number: "2.5M+", label: "Content Pieces", sublabel: "Published" },
-  { number: "15M+", label: "Monthly Readers", sublabel: "Worldwide" },
-  { number: "4.9/5", label: "Creator Rating", sublabel: "10K+ reviews" },
+  { number: "0.1s", label: "Latency", sublabel: "Global Edge Network" },
+  { number: "99%", label: "Uptime", sublabel: "Serverless Architecture" },
+  { number: "100%", label: "Type Safe", sublabel: "End-to-end TypeScript" },
+  { number: "AI", label: "Native", sublabel: "Built-in LLM Support" },
 ];
 
 export const testimonials = [
   {
-    name: "Sarah Mitchell",
-    role: "Tech Content Creator",
-    company: "TechVoice Media",
-    image: "1580489944761-15a19d654956",
-    quote:
-      "This platform revolutionized my content workflow. What used to take me 6 hours now takes 45 minutes. The AI writing assistant is frighteningly good.",
-    metrics: { growth: "+340%", time: "5hrs saved/week" },
-    rating: 5,
-  },
-  {
-    name: "Marcus Rodriguez",
-    role: "Newsletter Entrepreneur",
-    company: "GrowthLetters",
+    name: "Alex Chen",
+    role: "Senior Developer",
+    company: "TechFlow",
     image: "1507003211169-0a1dd7228f2d",
     quote:
-      "I've tried every platform out there. This is the only one that actually helped me scale from 1K to 50K subscribers in 8 months. The analytics alone are worth it.",
-    metrics: { growth: "+5000%", subscribers: "50K" },
+      "The integration of Google Gemini with a WYSIWYG editor is seamless. It feels like having a pair programmer but for writing technical blogs.",
+    metrics: { efficiency: "2x Faster" },
     rating: 5,
   },
   {
-    name: "Elena Chen",
-    role: "Content Strategist",
-    company: "Digital Narratives",
-    image: "1544005313-94ddf0286df2",
+    name: "Sarah Miller",
+    role: "Technical Writer",
+    company: "DevCorp",
+    image: "1580489944761-15a19d654956",
     quote:
-      "The ROI is insane. My client engagement tripled, and I'm managing 3x more accounts with less stress. This is what professional content tools should be.",
-    metrics: { engagement: "+285%", clients: "3x more" },
-    rating: 5,
-  },
-  {
-    name: "David Park",
-    role: "Marketing Director",
-    company: "SaaS Ventures",
-    image: "1506794778202-cad84cf45f1d",
-    quote:
-      "We consolidated 5 different tools into this one platform. The team collaboration features and analytics dashboard are enterprise-grade quality.",
-    metrics: { saved: "$24K/year", efficiency: "+220%" },
+      "Finally, a blogging platform that understands developers. The code highlighting is perfect, and the real-time sync is magic.",
+    metrics: { publishing: "Instant" },
     rating: 5,
   },
 ];
 
 export const comparisonFeatures = [
-  { name: "AI Writing Assistant", us: true, others: "Limited" },
-  { name: "Advanced Analytics", us: true, others: "Basic" },
-  { name: "Unlimited Content", us: true, others: false },
-  { name: "API Access", us: true, others: "Paid Add-on" },
-  { name: "Priority Support", us: true, others: false },
-  { name: "Custom Branding", us: true, others: "Enterprise Only" },
-  { name: "Multi-user Collaboration", us: true, others: "Limited" },
-  { name: "White-label Options", us: true, others: false },
+  { name: "Real-time DB (Convex)", us: true, others: false },
+  { name: "AI Writing (Gemini)", us: true, others: "Paid Plugin" },
+  { name: "Type-Safety", us: "100%", others: "Partial" },
+  { name: "Auth (Clerk)", us: "Enterprise", others: "Basic" },
+  { name: "Modern UI (Tailwind 4)", us: true, others: false },
 ];
 
 export const workflows = [
   {
     step: "01",
-    title: "Ideate & Plan",
-    description:
-      "Use AI to brainstorm topics, generate outlines, and plan your content calendar with data-driven insights.",
-    icon: Lightbulb,
+    title: "Authenticate",
+    description: "Secure login via Clerk using Email or Social Providers.",
+    icon: Fingerprint,
   },
   {
     step: "02",
-    title: "Create & Polish",
+    title: "Create",
     description:
-      "Write with AI assistance, add media, optimize for SEO, and perfect your content with real-time suggestions.",
-    icon: PenTool,
+      "Draft content with Gemini AI assistance in our rich text editor.",
+    icon: Bot,
   },
   {
     step: "03",
-    title: "Publish & Distribute",
-    description:
-      "Schedule optimal posting times, cross-post to multiple platforms, and reach your audience effectively.",
-    icon: Rocket,
+    title: "Store",
+    description: "Data saves instantly to Convex DB with automatic validation.",
+    icon: Database,
   },
   {
     step: "04",
-    title: "Analyze & Grow",
-    description:
-      "Track performance, understand engagement patterns, and use insights to continuously improve and grow.",
-    icon: TrendingUp,
+    title: "Publish",
+    description: "Content goes live globally via Next.js Edge Runtime.",
+    icon: Globe,
   },
 ];
 
 export const faqs = [
   {
-    q: "How does the AI writing assistant work?",
-    a: "Our AI uses advanced language models to provide contextual suggestions, grammar corrections, style improvements, and SEO optimization in real-time as you write.",
+    q: "What AI model does Ezensi use?",
+    a: "Ezensi integrates Google's Gemini Pro model for high-performance text generation and analysis.",
   },
   {
-    q: "Can I migrate my existing content?",
-    a: "Yes! We provide easy import tools for all major platforms including WordPress, Medium, Substack, and more. Your content, images, and metadata transfer seamlessly.",
+    q: "Is the database real-time?",
+    a: "Yes, we use Convex, which provides websocket-based real-time updates. You never need to refresh the page.",
   },
   {
-    q: "Is there a limit on content creation?",
-    a: "On paid plans, you get unlimited posts, drafts, and revisions. Free plan is limited to 5 posts per month.",
+    q: "How secure is the authentication?",
+    a: "We rely on Clerk, an industry-standard authentication provider that handles 2FA, session management, and security best practices.",
   },
   {
-    q: "What kind of analytics do you provide?",
-    a: "Comprehensive analytics including views, engagement rates, reader demographics, traffic sources, content performance, growth trends, and AI-powered insights.",
-  },
-  {
-    q: "Do you offer team collaboration features?",
-    a: "Yes! Business plans include multi-user access, role-based permissions, commenting, version history, and workflow management.",
-  },
-  {
-    q: "How secure is my content?",
-    a: "We use bank-level encryption, regular security audits, SOC 2 compliance, automatic backups, and 2FA. Your content is always safe and private.",
+    q: "Is this project open source?",
+    a: "This is a portfolio project demonstrating modern full-stack capabilities with Next.js 16.",
   },
 ];

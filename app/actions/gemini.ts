@@ -4,17 +4,14 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-// interface GenerateFnArgs {
-//   title: string;
-//   category?: string;
-//   tags?: string[];
-// }
-// interface ImproveFnArgs {
-//   currentContent: string;
-//   improvementType: string;
-// }
+// Helper to strip Markdown code blocks if Gemini adds them (e.g. ```html ... ```)
+function cleanAIResponse(text: string): string {
+  return text.replace(/^```html\s*/i, "").replace(/```$/, "");
+}
 
-// generating content
+// ------------------------------------------------------------------
+// GENERATE CONTENT
+// ------------------------------------------------------------------
 export async function generatBlogContent(
   title: string,
   category: string = "",
@@ -25,37 +22,47 @@ export async function generatBlogContent(
       throw new Error("Title is required to generate content");
     }
 
+    // Use Gemini 1.5 Pro if available for better reasoning, otherwise Flash is fine
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    // Create a detailed prompt for blog content generation
+    // THE "ELITE WRITER" PROMPT
     const prompt = `
-      Write a comprehensive blog post with the title: "${title}"
+    You are an elite content strategist and senior technical writer. 
+    Your task is to write a viral-worthy, high-ranking blog post.
+    
+    METADATA:
+    - Title: "${title}"
+    - Category: ${category || "General"}
+    - Tags: ${tags.join(", ") || "None"}
 
-      ${category ? `Category: ${category}` : ""}
-      ${tags.length > 0 ? `Tags: ${tags.join(", ")}` : ""}
+    STRICT OUTPUT RULES:
+    1. Return ONLY raw HTML. Do not wrap it in markdown code blocks (no \`\`\`html).
+    2. Do NOT include the <h1> title (it is rendered separately).
+    3. Start directly with a compelling Hook/Introduction.
 
-      Requirements:
-      - Write engaging, informative content that matches the title
-      - Use proper HTML formatting with headers (h2, h3), paragraphs, lists, and emphasis
-      - Include 3-5 main sections with clear subheadings
-      - Write in a conversational yet professional tone
-      - Make it approximately 800-1200 words
-      - Include practical insights, examples, or actionable advice where relevant
-      - Use <h2> for main sections and <h3> for subsections
-      - Use <p> tags for paragraphs
-      - Use <ul> and <li> for bullet points when appropriate
-      - Use <strong> and <em> for emphasis
-      - Ensure the content is original and valuable to readers
+    WRITING GUIDELINES:
+    - Tone: Professional yet conversational, authoritative, and engaging. Avoid robotic transitions like "In conclusion" or "Furthermore".
+    - Structure: Use short paragraphs (2-3 sentences) for readability.
+    - Formatting: Use <h2> for main sections, <h3> for subsections. Use <ul>/<li> for lists.
+    - Engagement: Use <strong> for key insights. Use <blockquote> for standout quotes or takeaways.
 
-      Do not include the title in the content as it will be added separately.
-      Start directly with the introduction paragraph.
-      `;
+    CONTENT STRUCTURE:
+    1. **The Hook**: Start with a problem, a startling statistic, or a relatable scenario.
+    2. **The "Why It Matters"**: Briefly explain why the reader should care right now.
+    3. **Core Content (Deep Dive)**: 3-4 distinct sections. Use analogies and real-world examples.
+    4. **Actionable Takeaways**: Don't just explain concepts; tell the reader what to do next.
+    5. **Conclusion**: A brief wrap-up that encourages discussion or action.
+
+    Now, write the article. Make it approximately 1000 words.
+    `;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const content = response.text();
+    let content = response.text();
 
-    // Basic validation
+    // Clean up potential markdown formatting
+    content = cleanAIResponse(content);
+
     if (!content || content.trim().length < 100) {
       throw new Error("Generated content is too short or empty");
     }
@@ -66,30 +73,37 @@ export async function generatBlogContent(
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
-      if (error.message.includes("429 Too Many Requests")) {
+      console.error("AI Generation Error:", error.message);
+
+      // Handle Rate Limits gracefully
+      if (
+        error.message.includes("429") ||
+        error.message.includes("Too Many Requests")
+      ) {
         return {
           success: false,
-          error: "Resource exhausted. Please try again later.",
+          error:
+            "Our AI servers are currently overloaded. Please try again in a moment.",
         };
       }
 
       return {
         success: false,
-        error: error.message || "Failed to generate content. Please try again.",
+        error: "Failed to generate content. Please try again.",
       };
     }
+    return { success: false, error: "An unexpected error occurred" };
   }
 }
 
-// improving content
+// ------------------------------------------------------------------
+// IMPROVE CONTENT
+// ------------------------------------------------------------------
 export async function improveContent(
   currentContent: string,
   improvementType: string = "enhance",
 ) {
   try {
-    // const { currentContent, improvementType = "enhance" } = args;
-
     if (!currentContent || currentContent.trim().length === 0) {
       throw new Error("Content is required for improvement");
     }
@@ -97,57 +111,85 @@ export async function improveContent(
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     let prompt = "";
+    const baseInstructions = `
+      Return ONLY raw HTML. Do not wrap in markdown blocks. 
+      Keep the HTML structure valid (h2, h3, p, ul, li).
+      Do not add a title <h1> at the top.
+    `;
 
     switch (improvementType) {
       case "expand":
         prompt = `
-        Take this blog content and expand it with more details, examples, and insights:
-
+        Act as a Subject Matter Expert. The user wants to go deeper into this content.
+        
+        TASK:
+        Expand the following content by adding specific examples, data points, analogies, or step-by-step instructions.
+        Avoid fluff. Every added sentence must provide value.
+        
+        ${baseInstructions}
+        
+        CONTENT TO EXPAND:
         ${currentContent}
-
-        Requirements:
-        - Keep the existing structure and main points
-        - Add more depth and detail to each section
-        - Include practical examples and insights
-        - Maintain the original tone and style
-        - Return the improved content in the same HTML format
         `;
         break;
 
       case "simplify":
         prompt = `
-        Take this blog content and make it more concise and easier to read:
-
+        Act as a Professional Editor. The user wants this content to be more accessible.
+        
+        TASK:
+        Rewrite the content to aim for a Grade 8 readability level.
+        - Break long sentences.
+        - Replace jargon with simple words.
+        - Use analogies to explain complex topics.
+        - Keep the original meaning but make it punchy.
+        
+        ${baseInstructions}
+        
+        CONTENT TO SIMPLIFY:
         ${currentContent}
-
-        Requirements:
-        - Keep all main points but make them clearer
-        - Remove unnecessary complexity
-        - Use simpler language where possible
-        - Maintain the HTML formatting
-        - Keep the essential information
         `;
         break;
 
-      default: // enhance
+      case "shorten": // Added a new useful case
         prompt = `
-        Improve this blog content by making it more engaging and well-structured:
-
+        Act as a Concise Editor. 
+        
+        TASK:
+        Summarize and condense this content. Remove redundancy. 
+        Keep only the most high-impact sentences.
+        
+        ${baseInstructions}
+        
+        CONTENT TO SHORTEN:
         ${currentContent}
+        `;
+        break;
 
-        Requirements:
-        - Improve the flow and readability
-        - Add engaging transitions between sections
-        - Enhance with better examples or explanations
-        - Maintain the original HTML structure
-        - Keep the same length approximately
-        - Make it more compelling to read
+      default: // "enhance" (Polish/Fix Grammar)
+        prompt = `
+        Act as a Senior Copyeditor.
+        
+        TASK:
+        Polish the following content. 
+        - Fix any grammar or spelling errors.
+        - Improve sentence flow and rhythm (avoid repetitive sentence structures).
+        - Change passive voice to active voice.
+        - Make the tone more confident and engaging.
+        
+        ${baseInstructions}
+        
+        CONTENT TO POLISH:
+        ${currentContent}
         `;
     }
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const improvedContent = response.text();
+    let improvedContent = response.text();
+
+    // Clean up potential markdown formatting
+    improvedContent = cleanAIResponse(improvedContent);
 
     return {
       success: true,
@@ -155,12 +197,12 @@ export async function improveContent(
     };
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
-
+      console.error("AI Improvement Error:", error.message);
       return {
         success: false,
-        error: error.message || "Failed to improve content. Please try again.",
+        error: error.message || "Failed to improve content.",
       };
     }
+    return { success: false, error: "An unexpected error occurred" };
   }
 }
