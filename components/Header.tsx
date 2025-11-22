@@ -3,7 +3,6 @@
 import { useStoreUser } from "@/hooks/use-store-user";
 import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Authenticated, Unauthenticated } from "convex/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarLoader } from "react-spinners";
@@ -24,8 +23,8 @@ function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // LOGIC: Header show only home or feed (KEPT EXACTLY THE SAME)
-  if (path !== "/" && path !== "/feed" && path.includes("/")) {
+  // LOGIC: Header hide on dashboard
+  if (path.includes("/dashboard")) {
     return null;
   }
 
@@ -35,7 +34,7 @@ function Header() {
         scrolled ? "py-2" : "py-4"
       }`}
     >
-      {/* CONTAINER: Changed from simple pill to a 'Floating Island' aesthetic */}
+      {/* CONTAINER: Floating Style (Light Mode) */}
       <div className="container mx-auto max-w-6xl px-4">
         <div
           className={`
@@ -43,83 +42,78 @@ function Header() {
             rounded-2xl border transition-all duration-500
             ${
               scrolled
-                ? "bg-black/80 backdrop-blur-xl border-white/10 shadow-2xl shadow-indigo-500/10"
-                : "bg-black/40 backdrop-blur-lg border-white/5 shadow-lg"
+                ? "bg-white/80 backdrop-blur-xl border-slate-200/80 shadow-xl shadow-slate-200/40"
+                : "bg-white/60 backdrop-blur-lg border-slate-200/50 shadow-lg shadow-slate-100"
             }
           `}
         >
-          {/* GLOW EFFECT: A subtle gradient orb behind the logo */}
-          <div className="absolute left-10 top-1/2 -translate-y-1/2 w-24 h-24 bg-indigo-500/20 blur-2xl rounded-full pointer-events-none" />
-
           {/* LOGO SECTION */}
           <Link
             href={isAuthenticated ? "/feed" : "/"}
             className="relative flex items-center gap-3 group z-10"
           >
-            <Image
-              src={"/logo.png"}
-              alt="Logo"
-              width={96}
-              height={32}
-              className="relative w-full h-full object-contain drop-shadow-lg"
-            />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold text-slate-900">Ezensi</span>
+            </div>
           </Link>
 
-          {/* NAV LINKS: Changed to 'Pill Tabs' style */}
+          {/* NAV LINKS (Home only) */}
           {path === "/" && (
-            <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+            <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 p-1 rounded-full bg-slate-100/50 border border-slate-200/50 backdrop-blur-md">
               <Link
                 href="#features"
-                className="px-4 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
+                className="px-4 py-1.5 text-xs font-medium text-slate-500 hover:text-indigo-600 hover:bg-white rounded-full transition-all duration-300 shadow-sm hover:shadow"
               >
                 Features
               </Link>
               <Link
                 href="#testimonials"
-                className="px-4 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
+                className="px-4 py-1.5 text-xs font-medium text-slate-500 hover:text-indigo-600 hover:bg-white rounded-full transition-all duration-300 shadow-sm hover:shadow"
               >
                 Testimonials
               </Link>
             </nav>
           )}
 
-          {/* AUTH ACTIONS: Totally redesigned buttons */}
+          {/* AUTH ACTIONS */}
           <div className="flex items-center gap-3 z-10">
             <Unauthenticated>
               <SignInButton>
                 <Button
                   variant="ghost"
-                  className="hidden sm:inline-flex h-9 px-4 text-zinc-400 hover:text-white hover:bg-transparent font-medium text-sm tracking-wide hover:underline decoration-indigo-500 underline-offset-4"
+                  className="hidden sm:inline-flex h-9 px-4 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 font-medium text-sm tracking-wide cursor-pointer"
                 >
                   Log in
                 </Button>
               </SignInButton>
 
               <SignUpButton>
-                {/* BUTTON DESIGN: 'Shining Metal' Look */}
-                <button className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all duration-300 hover:bg-indigo-50 hover:w-auto hover:scale-105">
+                {/* Primary CTA */}
+                <button className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-indigo-600 px-4 font-medium text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 hover:scale-105 cursor-pointer">
                   <span className="mr-2 size-4 transition-transform group-hover:-translate-x-1">
-                    <Sparkles className="w-full h-full fill-indigo-500 text-indigo-600" />
+                    <Sparkles className="w-full h-full text-indigo-200 group-hover:text-white" />
                   </span>
-                  <span className="text-sm font-bold tracking-tight">
+                  <span className="text-sm font-bold tracking-wide">
                     Get Started
                   </span>
-                  <div className="absolute inset-0 -z-10 bg-linear-to-r from-indigo-400 via-purple-400 to-indigo-400 opacity-0 transition-opacity duration-500 group-hover:opacity-10 group-active:opacity-20" />
                 </button>
               </SignUpButton>
             </Unauthenticated>
 
             <Authenticated>
               <Link href="/dashboard">
-                <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-indigo-500/50 transition-all duration-300 group">
-                  <LayoutDashboard className="w-3.5 h-3.5 text-zinc-500 group-hover:text-indigo-400 transition-colors" />
+                <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-white hover:border-indigo-200 hover:text-indigo-600 hover:shadow-sm transition-all duration-300 group">
+                  <LayoutDashboard className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
                   <span>Dashboard</span>
                 </button>
               </Link>
 
-              {/* AVATAR: Added a ring container */}
-              <div className="ml-2 p-0.5 rounded-full bg-linear-to-b from-white/20 to-transparent">
-                <div className="p-px bg-black rounded-full">
+              {/* AVATAR: Light mode ring */}
+              <div className="ml-2 p-0.5 rounded-full bg-linear-to-b from-indigo-100 to-transparent">
+                <div className="p-px bg-white rounded-full shadow-sm">
                   <UserButton
                     afterSignOutUrl="/"
                     appearance={{
@@ -133,13 +127,12 @@ function Header() {
             </Authenticated>
           </div>
 
-          {/* LOADING BAR: Moved to a 'Cyber Line' at the bottom of the container */}
+          {/* LOADING BAR: Indigo Color */}
           {isLoading && (
-            <div className="absolute bottom-0 left-4 right-4 h-px overflow-hidden">
-              <div className="absolute inset-0 bg-indigo-500/20" />
+            <div className="absolute bottom-0 left-4 right-4 h-0.5 overflow-hidden rounded-full">
               <BarLoader
                 width={"100%"}
-                color="#818cf8"
+                color="#4f46e5" // Indigo-600
                 height={2}
                 cssOverride={{
                   borderRadius: "100px",

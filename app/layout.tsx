@@ -3,7 +3,7 @@ import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { BackgroundWrapper } from "@/components/ui/background-wrapper";
+// import { BackgroundWrapper } from "@/components/ui/background-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import Header from "@/components/Header";
@@ -40,7 +40,7 @@ export default function RootLayout({
         theme: dark,
       }}
     >
-      <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -52,10 +52,8 @@ export default function RootLayout({
           >
             <main className="min-h-screen bg-[#030014] text-white overflow-hidden">
               <ConvexClientProvider>
-                <BackgroundWrapper>
-                  <Header />
-                  {children}
-                </BackgroundWrapper>
+                <Header />
+                {children}
               </ConvexClientProvider>
             </main>
             <Toaster richColors />

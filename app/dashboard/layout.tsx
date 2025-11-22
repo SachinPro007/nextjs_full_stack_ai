@@ -14,11 +14,11 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="relative min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900">
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -31,10 +31,10 @@ export default function DashboardLayout({
         setSidebarCollapsed={setSidebarCollapsed}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Wrapper */}
       <div
         className={cn(
-          "transition-all duration-500 ease-in-out relative z-10",
+          "transition-all duration-500 ease-in-out relative z-10 flex flex-col min-h-screen",
           sidebarCollapsed ? "lg:ml-20" : "lg:ml-80",
         )}
       >
@@ -42,7 +42,11 @@ export default function DashboardLayout({
         <Header setMobileOpen={setMobileOpen} />
 
         {/* Page Content */}
-        <main className="min-h-[calc(100vh-5rem)]">{children}</main>
+        <main className="flex-1 p-6 lg:p-8">
+          <div className="min-h-full w-full mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

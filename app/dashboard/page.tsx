@@ -2,20 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import { Activitis } from "@/convex/dashboard";
 import { Post } from "@/convex/schema";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { formatDistanceToNow } from "date-fns";
 import {
-  Calendar,
   Eye,
   Heart,
   Loader2,
@@ -23,11 +15,16 @@ import {
   PlusCircle,
   TrendingUp,
   Users,
+  ArrowRight,
+  Sparkles,
+  Zap,
+  PenTool,
+  MoreHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-// types
+// --- Types ---
 interface PostWithCommentCount extends Post {
   commentCount: number;
 }
@@ -69,19 +66,24 @@ function Dashboard() {
     api.dashboard.recentActivity,
   ) as RecentActivitis;
 
-  // Loading states
+  // --- Loading State ---
   if (analyticsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-400 mx-auto" />
-          <p className="text-slate-400 mt-4">Loading dashboard...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="relative">
+          <div className="absolute inset-0 bg-indigo-500 blur-xl opacity-20 animate-pulse" />
+          <div className="relative bg-white p-4 rounded-2xl shadow-xl border border-indigo-100">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          </div>
         </div>
+        <p className="text-slate-500 font-medium animate-pulse">
+          Syncing dashboard...
+        </p>
       </div>
     );
   }
 
-  // Default values if no data
+  // --- Default Values ---
   const stats = analytics || {
     totalView: 0,
     totalLikes: 0,
@@ -93,323 +95,334 @@ function Dashboard() {
     followersGrowth: 0,
   };
 
-  // Format time relative to now
   const formatTime = (timestamp: number | string) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
 
+  const statsCard = [
+    {
+      icon: Eye,
+      growth: stats.viewsGrowth,
+      text: "Total Views",
+      count: stats.totalView.toLocaleString(),
+      color: "indigo",
+    },
+    {
+      icon: Heart,
+      growth: stats.likesGrowth,
+      text: "Total Likes",
+      count: stats.totalLikes.toLocaleString(),
+      color: "pink",
+    },
+    {
+      icon: MessageCircle,
+      growth: stats.commentsGrowth,
+      text: "Comments",
+      count: stats.recentComments.toLocaleString(),
+      color: "amber",
+    },
+    {
+      icon: Users,
+      growth: stats.followersGrowth,
+      text: "Followers",
+      count: stats.totalFollowers.toLocaleString(),
+      color: "violet",
+    },
+  ];
+
   return (
-    <div className="space-y-8 p-4 lg:p-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold gradient-text-primary">
-            Dashboard
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* --- HEADER SECTION --- */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-2">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 shadow-sm">
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            </span>
+            <span className="text-xs font-bold text-slate-600 tracking-wide uppercase">
+              Live Overview
+            </span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
+            Welcome back, <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-violet-600">
+              Creator.
+            </span>
           </h1>
-          <p className="text-slate-400 mt-2">
-            Welcome back! Here`s what`s happening with your content.
+          <p className="text-slate-500 text-lg max-w-xl leading-relaxed">
+            Here&apos;s what&apos;s happening with your content ecosystem today.
           </p>
         </div>
 
         <Link href="/dashboard/create">
-          <Button variant={"default"}>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Create New Post
+          <Button className="h-12 px-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-xl shadow-slate-200 hover:-translate-y-1 transition-all">
+            <PenTool className="h-4 w-4 mr-2" />
+            Write New Post
           </Button>
         </Link>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* views */}
-        <Card className="card-glass">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-slate-300">
-              Total Views
-            </CardTitle>
-            <Eye className="h-4 w-4 text-blue-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {stats.totalView.toLocaleString()}
-            </div>
-            {stats.viewsGrowth > 0 && (
-              <div className="flex items-center text-xs text-green-400 mt-1">
-                <TrendingUp className="h-3 w-3 mr-1" />+{stats.viewsGrowth}%
-                from last month
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* likes */}
-        <Card className="card-glass">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-slate-300">
-              Total Likes
-            </CardTitle>
-            <Heart className="h-4 w-4 text-red-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {stats.totalLikes.toLocaleString()}
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statsCard.map((s) => (
+          <div
+            key={s.text}
+            className={`relative p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden`}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <s.icon className={`w-24 h-24 text-${s.color}-600 -mr-4 -mt-4`} />
             </div>
-            {stats.likesGrowth > 0 && (
-              <div className="flex items-center text-xs text-green-400 mt-1">
-                <TrendingUp className="h-3 w-3 mr-1" />+{stats.likesGrowth}%
-                from last month
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* comments */}
-        <Card className="card-glass">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-slate-300">
-              Comments
-            </CardTitle>
-            <MessageCircle className="h-4 w-4 text-yellow-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {stats.recentComments.toLocaleString()}
-            </div>
-            {stats.commentsGrowth > 0 && (
-              <div className="flex items-center text-xs text-green-400 mt-1">
-                <TrendingUp className="h-3 w-3 mr-1" />+{stats.commentsGrowth}%
-                from last month
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-4">
+                <div
+                  className={`p-3 bg-${s.color}-50 rounded-xl border border-${s.color}-100 group-hover:bg-${s.color}-100 transition-colors`}
+                >
+                  <s.icon className={`h-6 w-6 text-${s.color}-600`} />
+                </div>
 
-        {/* followers */}
-        <Card className="card-glass">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-slate-300">
-              Followers
-            </CardTitle>
-            <Users className="h-4 w-4 text-green-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">
-              {stats.totalFollowers.toLocaleString()}
-            </div>
-            {stats.followersGrowth > 0 && (
-              <div className="flex items-center text-xs text-green-400 mt-1">
-                <TrendingUp className="h-3 w-3 mr-1" />+{stats.followersGrowth}%
-                from last month
+                {s.growth > 0 && (
+                  <Badge className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100 shadow-none">
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    {s.growth}%
+                  </Badge>
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
+
+              <p className="text-sm font-medium text-slate-500 mb-1">
+                {s.text}
+              </p>
+
+              <h3 className="text-3xl font-black text-slate-900">{s.count}</h3>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* main content grid */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Left side */}
+      {/* --- MAIN CONTENT GRID --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT COLUMN: Recent Posts */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Recent Posts */}
-          <Card className="card-glass">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white">Recent Posts</CardTitle>
-                <Link href="/dashboard/posts">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-400 hover:text-white"
-                  >
-                    View All
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {postsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
-                </div>
-              ) : recentPosts && recentPosts?.length > 0 ? (
-                <div className="space-y-4">
-                  {recentPosts.map((post) => (
-                    <Link
-                      href={`/dashboard/posts/edit/${post._id}`}
-                      key={post._id}
-                      className="flex items-center justify-between p-4 bg-slate-800/30 hover:bg-slate-700/30 cursor-pointer rounded-lg transition-colors"
-                    >
-                      <div className="flex-1">
-                        <h3 className="font-medium text-white truncate">
-                          {post.title || "Untitled Post"}
-                        </h3>
-                        <div className="flex items-center gap-4 mt-2">
-                          <Badge
-                            variant={
-                              post.status === "published"
-                                ? "default"
-                                : post.status === "draft"
-                                  ? "secondary"
-                                  : "outline"
-                            }
-                            className={
-                              post.status === "published"
-                                ? "bg-green-500/20 text-green-300 border-green-500/30"
-                                : post.status === "draft"
-                                  ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                                  : "bg-orange-500/20 text-orange-300 border-orange-500/30"
-                            }
-                          >
-                            {post.status}
-                          </Badge>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900">
+              Latest Writings
+            </h2>
+            <Link href="/dashboard/posts">
+              <Button
+                variant="ghost"
+                className="text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+              >
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
 
-                          {/* post age */}
-                          <span className="text-sm text-slate-400">
-                            {post.status === "published" && post.publishedAt
-                              ? `Published ${formatTime(post.publishedAt)}`
-                              : post.status === "draft"
-                                ? `Updated ${formatTime(post.updatedAt)}`
-                                : post.scheduledFor
-                                  ? `Scheduled for ${new Date(post.scheduledFor).toLocaleDateString()}`
-                                  : `Updated ${formatTime(post.updatedAt)}`}
+          <div className="space-y-4">
+            {postsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-indigo-400" />
+              </div>
+            ) : recentPosts && recentPosts.length > 0 ? (
+              recentPosts.map((post) => (
+                <div
+                  key={post._id}
+                  className="group relative bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-50 transition-all duration-300"
+                >
+                  <div className="flex justify-between items-start gap-3 sm:gap-4">
+                    {/* Content Wrapper */}
+                    <div className="space-y-2 flex-1 min-w-0">
+                      {/* Status Badge Row */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`inline-block w-2 h-2 rounded-full shrink-0 ${
+                            post.status === "published"
+                              ? "bg-emerald-500"
+                              : "bg-amber-400"
+                          }`}
+                        />
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          {post.status}
+                        </span>
+                        <span className="text-xs text-slate-300 hidden sm:inline">
+                          •
+                        </span>
+                        <span className="text-xs text-slate-400 font-medium truncate">
+                          {formatTime(
+                            post.status === "published"
+                              ? post.publishedAt!
+                              : post.updatedAt,
+                          )}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <Link
+                        href={`/dashboard/posts/edit/${post._id}`}
+                        className="block group-hover:text-indigo-600 transition-colors"
+                      >
+                        <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate pr-2">
+                          {post.title || "Untitled Draft"}
+                        </h3>
+                      </Link>
+
+                      {/* Metrics Row - Responsive Gaps */}
+                      <div className="flex items-center gap-4 sm:gap-6 pt-1">
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs sm:text-sm group-hover:text-indigo-500/70 transition-colors">
+                          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <span className="font-medium">
+                            {post.viewCount || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs sm:text-sm group-hover:text-pink-500/70 transition-colors">
+                          <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <span className="font-medium">
+                            {post.likeCount || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs sm:text-sm group-hover:text-amber-500/70 transition-colors">
+                          <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <span className="font-medium">
+                            {post.commentCount || 0}
                           </span>
                         </div>
                       </div>
+                    </div>
 
-                      {/* post analytics */}
-                      <div className="flex items-center gap-4 text-sm text-slate-400">
-                        <div className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {post.viewCount || 0}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {post.likeCount || 0}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="h-4 w-4" />
-                          {post.commentCount || 0}
-                        </div>
-                      </div>
+                    {/* Action Button - Edit post */}
+                    <Link
+                      href={`/dashboard/posts/edit/${post._id}`}
+                      className="shrink-0"
+                    >
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-slate-300 group-hover:text-indigo-600 group-hover:bg-indigo-50 rounded-xl h-8 w-8 sm:h-10 sm:w-10 cursor-pointer"
+                      >
+                        <PenTool className="w-4 h-4" />
+                      </Button>
                     </Link>
-                  ))}
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-slate-400 mb-4">No posts yet</p>
-                  <Link href="/dashboard/create">
-                    <Button variant="outline" size="sm">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Create Your First Post
-                    </Button>
-                  </Link>
+              ))
+            ) : (
+              // Empty State
+              <div className="text-center py-12 sm:py-16 px-6 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-400" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  No content yet
+                </h3>
+                <p className="text-slate-500 text-sm mb-6 max-w-xs mx-auto">
+                  Your audience is waiting. Create your first masterpiece today.
+                </p>
+                <Link href="/dashboard/create">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200">
+                    Create Post
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right side */}
-        <div className="space-y-6">
-          {/* Activity Feed */}
-          <Card className="card-glass">
-            <CardHeader>
-              <CardTitle className="text-white">Recent Activity</CardTitle>
-              <CardDescription>
-                Latest interactions with your content
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+        {/* RIGHT COLUMN: Actions & Activity */}
+        <div className="space-y-8">
+          {/* Quick Actions */}
+          <div className="rounded-3xl p-1 bg-linear-to-br from-indigo-600 to-violet-600 shadow-2xl shadow-indigo-200/50">
+            <div className="bg-white/10 backdrop-blur-sm rounded-[20px] p-6 text-white h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md">
+                  <Zap className="w-5 h-5 text-yellow-300" />
+                </div>
+                <h3 className="font-bold text-lg">Quick Actions</h3>
+              </div>
+
+              <div className="space-y-3">
+                <Link href="/dashboard/create" className="block">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 transition-all text-sm font-semibold text-left">
+                    <PlusCircle className="w-4 h-4 text-indigo-200 shrink-0" />
+                    Create New Post
+                  </button>
+                </Link>
+                <Link href="/dashboard/posts" className="block">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 transition-all text-sm font-semibold text-left">
+                    <MoreHorizontal className="w-4 h-4 text-indigo-200 shrink-0" />
+                    Manage Content
+                  </button>
+                </Link>
+                <Link href="/settings" className="block">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 transition-all text-sm font-semibold text-left">
+                    <Users className="w-4 h-4 text-indigo-200 shrink-0" />
+                    View Audience
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-indigo-600" />
+              Activity Feed
+            </h3>
+
+            <div className="space-y-6 pl-2">
               {activityLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+                <div className="py-4 text-center text-slate-400 text-sm">
+                  Loading activity...
                 </div>
               ) : recentActivity && recentActivity.length > 0 ? (
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                          activity.type === "like"
-                            ? "bg-red-500/20 text-red-300"
-                            : activity.type === "comment"
-                              ? "bg-blue-500/20 text-blue-300"
-                              : "bg-green-500/20 text-green-300"
-                        }`}
-                      >
-                        {activity.type === "like" && (
-                          <Heart className="h-3 w-3" />
-                        )}
-                        {activity.type === "comment" && (
-                          <MessageCircle className="h-3 w-3" />
-                        )}
-                        {activity.type === "follow" && (
-                          <Users className="h-3 w-3" />
-                        )}
-                      </div>
+                recentActivity.map((activity, i) => (
+                  <div
+                    key={i}
+                    className="relative pl-6 pb-2 border-l border-slate-100 last:border-0"
+                  >
+                    {/* Timeline Dot */}
+                    <div
+                      className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ring-1 ${
+                        activity.type === "like"
+                          ? "bg-pink-500 ring-pink-100"
+                          : activity.type === "comment"
+                            ? "bg-amber-500 ring-amber-100"
+                            : "bg-emerald-500 ring-emerald-100"
+                      }`}
+                    />
 
-                      <div className="flex-1">
-                        <p className="text-sm text-white">
-                          <span className="font-medium">{activity.user}</span>
-                          {activity.type === "like" &&
-                            ` liked your post "${activity.post}"`}
-                          {activity.type === "comment" &&
-                            ` commented on "${activity.post}"`}
-                          {activity.type === "follow" &&
-                            " started following you"}
-                        </p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          {formatTime(activity.time)}
-                        </p>
-                      </div>
+                    <div className="text-sm">
+                      <p className="text-slate-700 leading-snug">
+                        <span className="font-bold text-slate-900">
+                          {activity.user}
+                        </span>
+                        <span className="text-slate-500">
+                          {activity.type === "like" && " liked "}
+                          {activity.type === "comment" && " commented on "}
+                          {activity.type === "follow" && " followed you"}
+                        </span>
+                        {activity.post && (
+                          <span className="text-indigo-600 font-medium block mt-1 truncate max-w-[200px] sm:max-w-full">
+                            &quot;{activity.post}&quot;
+                          </span>
+                        )}
+                      </p>
+                      <span className="text-xs text-slate-400 mt-1 block">
+                        {formatTime(activity.time)}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">No recent activity</p>
+                <div className="text-center py-6 text-slate-400 text-sm italic">
+                  No recent activity
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="card-glass">
-            <CardHeader>
-              <CardTitle className="text-white">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="/dashboard/create">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700/50"
-                >
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Create New Post
-                </Button>
-              </Link>
-
-              <Link href="/dashboard/posts">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700/50"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Manage Posts
-                </Button>
-              </Link>
-
-              <Link href="/dashboard/followers">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700/50"
-                >
-                  <Users className="h-4 w-4 mr-2" />
-                  View Followers
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

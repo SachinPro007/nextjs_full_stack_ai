@@ -206,3 +206,49 @@ export async function improveContent(
     return { success: false, error: "An unexpected error occurred" };
   }
 }
+
+// ------------------------------------------------------------------
+// IMPROVE CONTENT
+// ------------------------------------------------------------------
+export async function generateSmartSuggestion(topic: string) {
+  try {
+    if (!topic) throw new Error("Topic is required");
+
+    // Use Flash for speed (it's perfect for short text)
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    // THE "ELITE MICRO-WRITER" PROMPT
+    const prompt = `
+    You are an expert tech copywriter known for clear, concise explanations.
+    
+    TASK: 
+    Write a **single, high-quality introductory paragraph** about: "${topic}".
+    
+    STRICT RULES:
+    1. **Direct Output Only**: Do not say "Here is a suggestion" or "Sure!". Just write the text.
+    2. **Length**: Maximum 100 words.
+    3. **Format**: Plain text only (No Markdown, No HTML, No symbols like # or *).
+    4. **Content Style**: meaningful, distinct, and professional.
+    5. **Goal**: This text will be displayed in a UI card as a quick summary.
+    
+    EXAMPLE INPUT: "React Hooks"
+    EXAMPLE OUTPUT: React Hooks allow function components to access state and lifecycle features without writing classes. They simplify logic reuse and make code cleaner and easier to test.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const content = response.text();
+
+    return {
+      success: true,
+      content: content.trim(), // Returns the clean text
+    };
+  } catch (error) {
+    console.error("AI Suggestion Error:", error);
+    return {
+      success: false,
+      content:
+        "Explore how this topic can transform your development workflow with practical examples.", // Fallback text
+    };
+  }
+}

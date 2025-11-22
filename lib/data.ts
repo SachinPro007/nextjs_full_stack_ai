@@ -1,5 +1,4 @@
 import {
-  Zap,
   Shield,
   Globe,
   Database,
@@ -7,16 +6,8 @@ import {
   Sparkles,
   Layout,
   Bot,
-  Terminal,
   Fingerprint,
-  Repeat,
 } from "lucide-react";
-
-export const heroFeatures = [
-  { icon: Bot, text: "Powered by Google Gemini" },
-  { icon: Database, text: "Real-time Convex DB" },
-  { icon: Fingerprint, text: "Secure Clerk Auth" },
-];
 
 export const platforms = [
   { name: "Next.js 16", icon: Globe },
@@ -43,7 +34,6 @@ export const keyFeatures = [
       "SEO-optimized suggestions",
       "Real-time collaboration",
     ],
-    // Keep your existing image or use a placeholder for the editor UI
     image:
       "https://img.freepik.com/free-vector/artificial-intelligence-concept-illustration_114360-7970.jpg?w=1060",
   },
@@ -85,39 +75,6 @@ export const keyFeatures = [
   },
 ];
 
-export const advancedCapabilities = [
-  {
-    icon: Zap,
-    title: "Instant Deployments",
-    desc: "Optimized for Vercel Edge Network with Next.js 16 capabilities.",
-  },
-  {
-    icon: Terminal,
-    title: "Type-Safe API",
-    desc: "Full TypeScript support from database schema to frontend components.",
-  },
-  {
-    icon: Repeat,
-    title: "Reactive UI",
-    desc: "Built with React 19 and Convex to handle state updates instantly.",
-  },
-  {
-    icon: Layout,
-    title: "Responsive Design",
-    desc: "Mobile-first UI built with Tailwind CSS v4 and Radix Primitives.",
-  },
-  {
-    icon: Sparkles,
-    title: "AI Image Gen",
-    desc: "Generate cover images for your blogs using integrated AI tools.",
-  },
-  {
-    icon: Code,
-    title: "Modern Stack",
-    desc: "Leveraging the latest features of Next.js App Router and Server Actions.",
-  },
-];
-
 export const stats = [
   { number: "0.1s", label: "Latency", sublabel: "Global Edge Network" },
   { number: "99%", label: "Uptime", sublabel: "Serverless Architecture" },
@@ -150,7 +107,7 @@ export const testimonials = [
 
 export const comparisonFeatures = [
   { name: "Real-time DB (Convex)", us: true, others: false },
-  { name: "AI Writing (Gemini)", us: true, others: "Paid Plugin" },
+  { name: "AI Writing (Gemini Pro)", us: true, others: "Paid Plugin" },
   { name: "Type-Safety", us: "100%", others: "Partial" },
   { name: "Auth (Clerk)", us: "Enterprise", others: "Basic" },
   { name: "Modern UI (Tailwind 4)", us: true, others: false },
