@@ -18,7 +18,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Calendar, Hash, Grid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const CATEGORIES = [
@@ -90,106 +90,149 @@ function PostEditorSettings({
   };
 
   return (
-    <div>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-md">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md bg-white rounded-3xl p-0 overflow-hidden border border-slate-100 shadow-2xl shadow-indigo-100/50">
+        {/* Header */}
+        <div className="bg-slate-50 p-6 border-b border-slate-100">
           <DialogHeader>
-            <DialogTitle className="text-white">Post Settings</DialogTitle>
-            <DialogDescription>Configure your post details</DialogDescription>
+            <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <Grid className="w-5 h-5 text-indigo-600" />
+              Post Configuration
+            </DialogTitle>
+            <DialogDescription className="text-slate-500">
+              Organize your content to help readers find it.
+            </DialogDescription>
           </DialogHeader>
+        </div>
 
-          <div className="space-y-6">
-            {/* category */}
-            <div className="space-y-2">
-              <Select
-                value={watchValues.category}
-                onValueChange={(value) => setValue("category", value)}
+        <div className="p-6 space-y-8">
+          {/* Category Selection */}
+          <div className="space-y-3">
+            <Label className="text-slate-700 text-sm font-bold flex items-center gap-2">
+              Category
+            </Label>
+            <Select
+              value={watchValues.category}
+              onValueChange={(value) => setValue("category", value)}
+            >
+              <SelectTrigger className="bg-white border-slate-200 text-slate-900 hover:bg-slate-50 hover:border-indigo-200 focus:ring-2 focus:ring-indigo-100 h-11 rounded-xl transition-all">
+                <SelectValue placeholder="Select a category..." />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-slate-100 shadow-xl bg-white">
+                {CATEGORIES.map((category) => (
+                  <SelectItem
+                    key={category}
+                    value={category}
+                    className="text-slate-700 focus:bg-indigo-50 focus:text-indigo-900 cursor-pointer rounded-lg my-1"
+                  >
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Tags Input */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label className="text-slate-700 text-sm font-bold flex items-center gap-2">
+                <Hash className="w-4 h-4 text-indigo-500" />
+                Tags
+              </Label>
+              <span className="text-xs text-slate-400 font-medium">
+                {watchValues.tags.length}/10
+              </span>
+            </div>
+
+            <div className="flex gap-2">
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInput}
+                placeholder="e.g., react, coding"
+                className="bg-white text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 h-10 rounded-xl text-sm"
+              />
+              <Button
+                type="button"
+                onClick={addTag}
+                disabled={!tagInput.trim() || watchValues.tags.length >= 10}
+                size="icon"
+                className="h-10 w-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 shadow-md shadow-indigo-200"
               >
-                <SelectTrigger className="bg-slate-800 border-slate-600">
-                  <SelectValue placeholder="Select category..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
 
-            {/* Tags */}
-            <div className="space-y-3">
-              <Label className="text-white text-sm font-medium">Tags</Label>
-
-              <div className="flex space-x-2">
-                <Input
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagInput}
-                  placeholder="Add Tags..."
-                  className="bg-slate-800 border-slate-600"
-                />
-
-                <Button
-                  type="button"
-                  onClick={addTag}
-                  variant="outline"
-                  size="sm"
-                  className="border-slate-600"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {watchValues.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {watchValues.tags.map((tag, index) => (
-                    <Badge
-                      key={index}
-                      variant="default"
-                      className="bg-purple-500/20 text-purple-300 border-purple-500/30"
+            {/* Tags List */}
+            <div className="flex flex-wrap gap-2 min-h-10">
+              {watchValues.tags.length > 0 ? (
+                watchValues.tags.map((tag, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-lg text-xs font-medium hover:bg-indigo-100 transition-colors group"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="ml-1.5 text-indigo-400 group-hover:text-rose-500 transition-colors outline-none"
                     >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 hover:text-red-400"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-xs text-slate-400 italic w-full text-center py-2 border-2 border-dashed border-slate-100 rounded-xl">
+                  No tags added yet.
+                </p>
               )}
-
-              <p className="text-xs text-slate-400">
-                {watchValues.tags.length}/10 tags • Press Enter or comma to add
-              </p>
             </div>
 
-            {/* Scheduling */}
-            {mode === "create" && (
-              <div className="space-y-2">
-                <label className="text-white text-sm font-medium">
-                  Schedule Publication
-                </label>
+            <p className="text-[10px] text-slate-400 ml-1">
+              Press{" "}
+              <kbd className="font-sans bg-slate-100 px-1 rounded border border-slate-200 text-slate-500">
+                Enter
+              </kbd>{" "}
+              or comma to add
+            </p>
+          </div>
+
+          {/* Scheduling (Only create mode) */}
+          {mode === "create" && (
+            <div className="space-y-3 pt-4 border-t border-slate-100">
+              <Label className="text-slate-700 text-sm font-bold flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-indigo-500" />
+                Schedule Publication
+              </Label>
+              <div className="relative">
                 <Input
                   value={watchValues.scheduledFor}
                   onChange={(e) => setValue("scheduledFor", e.target.value)}
                   type="datetime-local"
-                  className="bg-slate-800 border-slate-600"
+                  className="bg-white text-slate-900 border-slate-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 h-11 rounded-xl scheme-light"
                   min={new Date().toISOString().slice(0, 16)}
                 />
-                <p className="text-xs text-slate-400">
-                  Leave empty to publish immediately
-                </p>
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+              <p className="text-xs text-slate-400">
+                Leave empty to publish immediately.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="bg-slate-50 p-4 border-t border-slate-100 flex justify-end">
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            className="text-slate-500 hover:text-slate-900 hover:bg-white rounded-xl"
+          >
+            Done
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

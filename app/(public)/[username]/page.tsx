@@ -12,16 +12,16 @@ import {
   UserPlus,
   Grid,
   List,
-  Loader2,
+  Sparkles,
+  MapPin,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
 import PostCard, { PostWithAuthor } from "@/components/dashboard-com/PostCard";
 import { useUser } from "@clerk/nextjs";
 
 // types
 interface UserProfileFnProp {
-  // Next.js 15 params are Promises
   params: Promise<{ username: string }>;
 }
 
@@ -33,6 +33,7 @@ interface GetUserByUsername {
         username: string;
         imageUrl: string;
         createdAt: number;
+        bio?: string;
       }
     | undefined;
   isLoading: boolean;
@@ -41,11 +42,9 @@ interface GetUserByUsername {
 
 function UserProfilePage({ params }: UserProfileFnProp) {
   const { username } = React.use(params);
-
-  // get current logged user
   const { user: currentUser } = useUser();
 
-  // get profile user
+  // --- Data Fetching ---
   const {
     data: user,
     isLoading: userLoading,
@@ -54,7 +53,6 @@ function UserProfilePage({ params }: UserProfileFnProp) {
     username,
   }) as GetUserByUsername;
 
-  // get user published posts
   const { data: postsData, isLoading: postsLoading } = useConvexQuery(
     api.public.getPublishedPostsByUserName,
     {
@@ -63,28 +61,27 @@ function UserProfilePage({ params }: UserProfileFnProp) {
     },
   ) as { data: { posts: PostWithAuthor[] } | undefined; isLoading: boolean };
 
-  // get followers count
   const { data: followersCount } = useConvexQuery(
     api.follows.getFollowerCount,
     { userId: user?._id },
   );
 
-  // Check current logged user following this profile
   const { data: isFollowing } = useConvexQuery(api.follows.isFollowing, {
     followingId: user?._id,
   });
 
-  // toggleFollow
   const toggleFollow = useConvexMutation(api.follows.toggleFollow);
 
-  // loading
+  // --- Loading State ---
   if (userLoading || postsLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mx-auto mb-4" />
-          <p className="text-slate-500 font-medium">Loading profile...</p>
+      <div className="flex flex-col items-center justify-center min-h-[80vh] bg-slate-50">
+        <div className="p-4 rounded-full bg-white shadow-xl shadow-indigo-100 animate-bounce">
+          <Sparkles className="h-8 w-8 text-indigo-600" />
         </div>
+        <p className="mt-4 text-slate-500 font-medium animate-pulse">
+          Fetching profile...
+        </p>
       </div>
     );
   }
@@ -93,28 +90,28 @@ function UserProfilePage({ params }: UserProfileFnProp) {
     notFound();
   }
 
-  // check current user on own profile page
   const isOwnProfile = currentUser && currentUser.username === user?.username;
   const posts = postsData?.posts || [];
 
-  // handle user follow toggle
+  // --- Handlers ---
   const handleFollowToggle = async () => {
     if (!currentUser) {
       toast.error("Please sign in to follow users");
       return;
     }
-
     if (username === user.username) {
-      toast.error("You can not follow yourself");
+      toast.error("You cannot follow yourself");
       return;
     }
 
     try {
       await toggleFollow.mutate({ followingId: user?._id });
+      if (!isFollowing) toast.success(`You are now following ${user.name}`);
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message || "Failed to update follow status");
+        return toast.error(error.message);
       }
+      toast.error("Failed to update follow status");
     }
   };
 
@@ -128,149 +125,192 @@ function UserProfilePage({ params }: UserProfileFnProp) {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 relative z-10 pt-24 md:pt-32">
-        {/* Profile Header Card */}
-        <Card className="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden mb-10">
-          <CardContent className="p-8 md:p-12">
-            <div className="flex flex-col items-center text-center">
-              {/* Avatar */}
-              <div className="relative w-28 h-28 mb-6 group">
-                <div className="absolute inset-0 rounded-full bg-indigo-100/50 scale-110 group-hover:scale-125 transition-transform duration-500" />
-                {user.imageUrl ? (
-                  <Image
-                    src={user.imageUrl}
-                    alt={user.name}
-                    fill
-                    loading="eager"
-                    className="rounded-full object-cover border-4 border-white shadow-md relative z-10"
-                    sizes="112px"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600 border-4 border-white shadow-md relative z-10">
-                    {user.name.charAt(0).toUpperCase()}
+        {/* --- PROFILE CARD --- */}
+        <div className="relative mb-12">
+          {/* Main Card Container */}
+          <div className="bg-white rounded-[2.5rem] shadow-xl shadow-indigo-100/40 border border-slate-200 overflow-hidden">
+            {/* 1. Cover Gradient (Twitter Style Banner) */}
+            <div className="h-48 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 relative">
+              <div className="absolute inset-0 bg-black opacity-20" />{" "}
+            </div>
+
+            <div className="px-8 pb-10 relative">
+              {/* 2. Floating Avatar */}
+              <div className="flex justify-between items-end -mt-16 mb-6">
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-4xl p-1.5 bg-white shadow-lg rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <div className="w-full h-full rounded-3xl overflow-hidden relative bg-slate-100">
+                      {user.imageUrl ? (
+                        <Image
+                          src={user.imageUrl}
+                          alt={user.name}
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-4xl font-bold text-white">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                </div>
+
+                {/* Follow Button (Top Right Alignment) */}
+                {!isOwnProfile && currentUser && (
+                  <Button
+                    onClick={handleFollowToggle}
+                    className={`rounded-xl h-12 px-8 font-bold shadow-lg transition-all hover:-translate-y-1 ${
+                      isFollowing
+                        ? "bg-white text-slate-700 border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 shadow-sm"
+                        : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200"
+                    }`}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserCheck className="w-4 h-4 mr-2" /> Following
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4 mr-2" /> Follow
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {/* Edit Profile Button (If Own Profile) */}
+                {isOwnProfile && (
+                  <Button
+                    variant="outline"
+                    className="rounded-xl h-12 px-6 font-bold border-slate-200 text-slate-700"
+                  >
+                    Edit Profile
+                  </Button>
                 )}
               </div>
 
-              {/* Name & Handle */}
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-1 tracking-tight">
-                {user.name}
-              </h1>
-              <p className="text-lg text-slate-500 font-medium mb-6">
-                @{user.username}
-              </p>
+              {/* 3. User Info */}
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                    {user.name}
+                    {/*Verified Badge */}
+                    <span className="bg-blue-500 text-white rounded-full p-1">
+                      <Check className="w-2 h-2" />
+                    </span>
+                  </h1>
+                  <p className="text-lg text-slate-500 font-medium">
+                    @{user.username}
+                  </p>
+                </div>
 
-              {/* Follow Button */}
-              {!isOwnProfile && currentUser && (
-                <Button
-                  onClick={handleFollowToggle}
-                  disabled={toggleFollow.isLoading}
-                  className={`mb-8 px-8 h-10 rounded-full font-semibold transition-all ${
-                    isFollowing
-                      ? "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-red-600"
-                      : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200"
-                  }`}
-                >
-                  {isFollowing ? (
-                    <>
-                      <UserCheck className="h-4 w-4 mr-2" />
-                      Following
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Follow
-                    </>
-                  )}
-                </Button>
-              )}
+                {/* Bio Placeholder */}
+                <p className="text-slate-600 max-w-2xl leading-relaxed text-lg">
+                  {user.bio ||
+                    "Digital explorer and content creator. Sharing insights on technology, design, and the future of web development."}
+                </p>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-8 md:gap-16 w-full max-w-lg mx-auto border-t border-slate-100 pt-8">
-                <div className="flex flex-col items-center group">
-                  <div className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                {/* Meta Details */}
+                <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-medium pt-2">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Joined{" "}
+                      {new Date(user.createdAt).toLocaleDateString(undefined, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4" />
+                    <span>Earth, Milky Way</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. Stats Strip */}
+              <div className="mt-8 py-4 px-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-wrap gap-8 md:gap-12 items-center w-fit">
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black text-slate-900">
                     {posts.length}
-                  </div>
-                  <div className="text-sm font-medium text-slate-500 uppercase tracking-wide mt-1">
+                  </span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Posts
-                  </div>
+                  </span>
                 </div>
-                <div className="flex flex-col items-center group">
-                  <div className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                <div className="w-px h-10 bg-slate-200 hidden sm:block" />
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black text-slate-900">
                     {followersCount || 0}
-                  </div>
-                  <div className="text-sm font-medium text-slate-500 uppercase tracking-wide mt-1">
+                  </span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Followers
-                  </div>
+                  </span>
                 </div>
-                <div className="flex flex-col items-center group">
-                  <div className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                <div className="w-px h-10 bg-slate-200 hidden sm:block" />
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black text-slate-900">
                     {posts
                       .reduce((acc, post) => acc + post.likeCount, 0)
                       .toLocaleString()}
-                  </div>
-                  <div className="text-sm font-medium text-slate-500 uppercase tracking-wide mt-1">
-                    Likes
-                  </div>
+                  </span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Total Likes
+                  </span>
                 </div>
               </div>
-
-              {/* Date Joined */}
-              <div className="mt-8 flex items-center text-sm text-slate-400 bg-slate-50 px-4 py-2 rounded-full">
-                <Calendar className="h-4 w-4 mr-2 text-slate-400" />
-                Joined{" "}
-                {new Date(user.createdAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Recent Posts Section */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Recent Posts
-            </h2>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-slate-400 hover:text-indigo-600"
-              >
+        {/* --- CONTENT SECTION --- */}
+        <div className="space-y-8 animate-in slide-in-from-bottom-10 duration-700 delay-200">
+          {/* Section Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-1 bg-indigo-500 rounded-full" />
+              <h2 className="text-2xl font-bold text-slate-900">
+                Latest Writings
+              </h2>
+            </div>
+
+            {/* View Toggle (Visual Only) */}
+            <div className="bg-white p-1 rounded-xl border border-slate-200 shadow-sm flex">
+              <button className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
                 <Grid className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-slate-400 hover:text-indigo-600"
-              >
+              </button>
+              <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600">
                 <List className="w-5 h-5" />
-              </Button>
+              </button>
             </div>
           </div>
 
+          {/* Posts Grid */}
           {posts.length === 0 ? (
-            <Card className="bg-slate-50 border-dashed border-2 border-slate-200 shadow-none rounded-2xl">
-              <CardContent className="text-center py-16">
-                <p className="text-slate-500 text-lg font-medium">
-                  No posts published yet
-                </p>
-                <p className="text-slate-400 text-sm mt-2">
-                  This user hasn&apos;t shared any stories.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-4xl bg-white/50">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                <Sparkles className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                No posts yet
+              </h3>
+              <p className="text-slate-500 max-w-sm">
+                {user.name} hasn&apos;t published any stories yet. Check back
+                later!
+              </p>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {posts.map((post) => (
-                <PostCard
-                  key={post._id}
-                  post={post}
-                  showActions={false}
-                  showAuthor={false}
-                />
+                <div key={post._id} className="h-full">
+                  <PostCard
+                    post={post}
+                    showActions={false}
+                    showAuthor={false}
+                  />
+                </div>
               ))}
             </div>
           )}

@@ -9,7 +9,7 @@ function Header({
   setMobileOpen: (value: boolean) => void;
 }) {
   return (
-    <header className="sticky top-0 h-20 bg-zinc-950/50 backdrop-blur-2xl border-b border-white/5 z-30">
+    <header className="sticky top-0 w-full h-20 bg-zinc-950 backdrop-blur-2xl border-b border-white/5 z-999">
       <div className="h-full px-6 lg:px-8 flex items-center justify-between">
         {/* Left Section */}
         <div className="flex items-center gap-4">
@@ -34,7 +34,7 @@ function Header({
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-3">
+        <div className="sticky right-6 flex items-center gap-3">
           {/* Notifications */}
           <Button
             variant="ghost"

@@ -17,7 +17,11 @@ function EditPost() {
     return <BarLoader width={"100%"} color="#3b82f6" />;
   }
 
-  return <PostEditor initialData={post} mode="edit" />;
+  return (
+    <div className="pt-20">
+      <PostEditor initialData={post} mode="edit" />
+    </div>
+  );
 }
 
 export default EditPost;

@@ -182,20 +182,20 @@ function ImageTransform({
   };
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-[380px_1fr] gap-6 lg:gap-8">
+    <div className="flex flex-col gap-6">
       {/* Left Panel - Controls */}
       <div className="space-y-6 max-h-[65vh] lg:max-h-[60vh]">
         {/* AI Tools Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
-              <Zap className="w-5 h-5 text-white" />
+              <Zap className="w-5 h-5 text-slate-900" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base lg:text-lg font-bold text-white">
+              <h3 className="text-base lg:text-lg font-bold text-slate-900">
                 AI Tools
               </h3>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-slate-500 truncate">
                 Powered by advanced AI
               </p>
             </div>
@@ -209,13 +209,13 @@ function ImageTransform({
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Scissors className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
+                    <Scissors className="w-4 h-4 lg:w-5 lg:h-5 text-slate-900" />
                   </div>
                   <div className="min-w-0">
-                    <Label className="text-white font-semibold text-sm lg:text-base block">
+                    <Label className="text-slate-900 font-semibold text-sm lg:text-base block">
                       Remove Background
                     </Label>
-                    <p className="text-xs text-gray-400 mt-0.5 truncate">
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
                       AI-powered extraction
                     </p>
                   </div>
@@ -241,13 +241,13 @@ function ImageTransform({
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-linear-to-br from-pink-500 to-rose-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
+                    <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-slate-900" />
                   </div>
                   <div className="min-w-0">
-                    <Label className="text-white font-semibold text-sm lg:text-base block">
+                    <Label className="text-slate-900 font-semibold text-sm lg:text-base block">
                       Drop Shadow
                     </Label>
-                    <p className="text-xs text-gray-400 mt-0.5 truncate">
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
                       {watchValue.backgroundRemoved
                         ? "Add realistic depth"
                         : "Requires background removal"}
@@ -269,13 +269,13 @@ function ImageTransform({
         <div className="space-y-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-blue-500 flex items-center justify-center shrink-0">
-              <Crop className="w-5 h-5 text-white" />
+              <Crop className="w-5 h-5 text-slate-900" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base lg:text-lg font-bold text-white">
+              <h3 className="text-base lg:text-lg font-bold text-slate-900">
                 Resize & Crop
               </h3>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-slate-500 truncate">
                 Adjust dimensions
               </p>
             </div>
@@ -283,7 +283,7 @@ function ImageTransform({
 
           {/* Aspect Ratio */}
           <div className="space-y-3">
-            <Label className="text-white font-medium text-sm flex items-center gap-2">
+            <Label className="text-slate-900 font-medium text-sm flex items-center gap-2">
               <Maximize2 className="w-4 h-4" />
               Aspect Ratio
             </Label>
@@ -291,7 +291,7 @@ function ImageTransform({
               value={watchValue.aspectRatio}
               onValueChange={(value) => setValue("aspectRatio", value)}
             >
-              <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
+              <SelectTrigger className="bg-white/5 border-white/10 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -299,7 +299,7 @@ function ImageTransform({
                   <SelectItem
                     key={ratio.value}
                     value={ratio.value}
-                    className="text-white hover:bg-white/5 rounded-lg my-1 cursor-pointer"
+                    className="text-slate-900 hover:bg-white/5 rounded-lg my-1 cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg lg:text-xl">{ratio.icon}</span>
@@ -307,7 +307,7 @@ function ImageTransform({
                         <div className="font-medium text-sm lg:text-base">
                           {ratio.label}
                         </div>
-                        <div className="text-xs text-gray-400 truncate">
+                        <div className="text-xs text-slate-500 truncate">
                           {ratio.desc}
                         </div>
                       </div>
@@ -321,12 +321,12 @@ function ImageTransform({
           {/* Custom Dimensions */}
           {watchValue.aspectRatio === "custom" && (
             <div className="p-4 rounded-xl bg-linear-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 space-y-3">
-              <p className="text-white text-sm font-medium">
+              <p className="text-slate-900 text-sm font-medium">
                 Custom Dimensions
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label className="text-white text-xs font-medium">
+                  <Label className="text-slate-900 text-xs font-medium">
                     Width (px)
                   </Label>
                   <Input
@@ -337,11 +337,11 @@ function ImageTransform({
                     }
                     min="100"
                     max="2000"
-                    className="bg-white/5 border-white/10 text-white rounded-lg h-10"
+                    className="bg-white/5 border-white/10 text-slate-900 rounded-lg h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-white text-xs font-medium">
+                  <Label className="text-slate-900 text-xs font-medium">
                     Height (px)
                   </Label>
                   <Input
@@ -352,7 +352,7 @@ function ImageTransform({
                     }
                     min="100"
                     max="2000"
-                    className="bg-white/5 border-white/10 text-white rounded-lg h-10"
+                    className="bg-white/5 border-white/10 text-slate-900 rounded-lg h-10"
                   />
                 </div>
               </div>
@@ -362,7 +362,7 @@ function ImageTransform({
           {/* Smart Crop Focus */}
           {watchValue.aspectRatio !== "original" && (
             <div className="space-y-3">
-              <Label className="text-white font-medium text-sm flex items-center gap-2">
+              <Label className="text-slate-900 font-medium text-sm flex items-center gap-2">
                 <Eye className="w-4 h-4" />
                 Smart Crop Focus
               </Label>
@@ -370,7 +370,7 @@ function ImageTransform({
                 value={watchValue.smartCropFocus}
                 onValueChange={(value) => setValue("smartCropFocus", value)}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
+                <SelectTrigger className="bg-white/5 border-white/10 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 rounded-xl">
@@ -378,7 +378,7 @@ function ImageTransform({
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-white hover:bg-white/5 rounded-lg my-1 cursor-pointer"
+                      className="text-slate-900 hover:bg-white/5 rounded-lg my-1 cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-lg lg:text-xl">
@@ -388,7 +388,7 @@ function ImageTransform({
                           <div className="font-medium text-sm lg:text-base">
                             {option.label}
                           </div>
-                          <div className="text-xs text-gray-400 truncate">
+                          <div className="text-xs text-slate-500 truncate">
                             {option.desc}
                           </div>
                         </div>
@@ -406,7 +406,7 @@ function ImageTransform({
           <Button
             onClick={applyTransformations}
             disabled={isTransforming}
-            className="w-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-xl h-11 lg:h-12 text-sm lg:text-base font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200"
+            className="w-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-slate-900 rounded-xl h-11 lg:h-12 text-sm lg:text-base font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200"
           >
             {isTransforming ? (
               <>
@@ -424,7 +424,7 @@ function ImageTransform({
           <Button
             onClick={resetTransformations}
             variant="outline"
-            className="w-full border-white/10 hover:bg-white/5 text-white rounded-xl h-11 lg:h-12"
+            className="w-full border-white/10 hover:bg-white/5 text-slate-900 rounded-xl h-11 lg:h-12"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Reset All
@@ -436,13 +436,13 @@ function ImageTransform({
       <div className="flex flex-col space-y-4 lg:space-y-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-            <ImageIcon className="w-5 h-5 text-white" />
+            <ImageIcon className="w-5 h-5 text-slate-900" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-base lg:text-lg font-bold text-white">
+            <h3 className="text-base lg:text-lg font-bold text-slate-900">
               Live Preview
             </h3>
-            <p className="text-xs text-gray-400 truncate">
+            <p className="text-xs text-slate-500 truncate">
               See changes in real-time
             </p>
           </div>
@@ -476,10 +476,10 @@ function ImageTransform({
                       <Loader2 className="relative w-10 h-10 lg:w-12 lg:h-12 text-purple-400 animate-spin mx-auto" />
                     </div>
                     <div>
-                      <p className="text-white font-semibold text-base lg:text-lg">
+                      <p className="text-slate-900 font-semibold text-base lg:text-lg">
                         Applying AI Magic...
                       </p>
-                      <p className="text-gray-400 text-xs lg:text-sm">
+                      <p className="text-slate-500 text-xs lg:text-sm">
                         This will just take a moment
                       </p>
                     </div>
@@ -496,13 +496,13 @@ function ImageTransform({
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-                  <Check className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                  <Check className="w-5 h-5 lg:w-6 lg:h-6 text-slate-900" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-white font-semibold text-sm lg:text-base">
+                  <p className="text-slate-900 font-semibold text-sm lg:text-base">
                     Image Ready
                   </p>
-                  <p className="text-xs text-gray-400 truncate">
+                  <p className="text-xs text-slate-500 truncate">
                     Your transformed image is ready to use
                   </p>
                 </div>
@@ -512,14 +512,14 @@ function ImageTransform({
                 <Button
                   onClick={handleClose}
                   variant="outline"
-                  className="flex-1 sm:flex-none border-white/10 hover:bg-white/5 text-white rounded-xl px-4 lg:px-6 h-10 lg:h-11"
+                  className="flex-1 sm:flex-none border-white/10 hover:bg-white/5 text-slate-900 rounded-xl px-4 lg:px-6 h-10 lg:h-11"
                 >
                   Cancel
                 </Button>
 
                 <Button
                   onClick={handleSelectImage}
-                  className="flex-1 sm:flex-none bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl px-4 lg:px-6 h-10 lg:h-11 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all"
+                  className="flex-1 sm:flex-none bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-900 rounded-xl px-4 lg:px-6 h-10 lg:h-11 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   <span className="truncate">Use This Image</span>

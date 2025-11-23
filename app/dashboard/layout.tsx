@@ -34,12 +34,14 @@ export default function DashboardLayout({
       {/* Main Content Wrapper */}
       <div
         className={cn(
-          "transition-all duration-500 ease-in-out relative z-10 flex flex-col min-h-screen",
+          "relative transition-all duration-500 ease-in-out z-10 flex flex-col min-h-screen",
           sidebarCollapsed ? "lg:ml-20" : "lg:ml-80",
         )}
       >
         {/* Top Bar */}
-        <Header setMobileOpen={setMobileOpen} />
+        <div className={`fixed top-0 w-full z-999`}>
+          <Header setMobileOpen={setMobileOpen} />
+        </div>
 
         {/* Page Content */}
         <main className="flex-1 p-6 lg:p-8">

@@ -74,7 +74,7 @@ function Sidebar({
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 h-full bg-zinc-950/80 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500 ease-in-out",
+        "fixed top-0 left-0 h-full bg-zinc-950 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500 ease-in-out",
         sidebarCollapsed ? "w-20" : "w-80",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
       )}

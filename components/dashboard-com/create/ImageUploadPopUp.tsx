@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitServerError,
-  ImageKitUploadNetworkError,
-  upload,
-  UploadResponse,
-} from "@imagekit/next";
+import { upload, UploadResponse } from "@imagekit/next";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TabsContent } from "@radix-ui/react-tabs";
 import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import z from "zod/v3";
@@ -25,16 +17,13 @@ import { useDropzone } from "react-dropzone";
 import {
   ArrowRight,
   Check,
-  FileCheck,
-  ImageIcon,
   Loader2,
   Sparkles,
   UploadIcon,
   Wand2,
-  Zap,
+  Image as LucideImage,
 } from "lucide-react";
 import { toast } from "sonner";
-// import Image from "next/image";
 import { authenticator } from "@/lib/imagekit";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,7 +48,6 @@ const transformationSchema = z.object({
   dropShadow: z.boolean().default(false),
 });
 
-//////////
 function ImageUploadPopUp({
   isOpen,
   onClose,
@@ -111,12 +99,10 @@ function ImageUploadPopUp({
     reset();
   };
 
-  // image drag and drop by React dropzone packeg
+  // image drag and drop
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (acceptedFile) => {
       const file = acceptedFile[0];
-
-      // file validation
       if (!file) return;
 
       if (!file.type.startsWith("image/")) {
@@ -132,7 +118,6 @@ function ImageUploadPopUp({
       try {
         const { signature, expire, token, publicKey } = await authenticator();
         const uploadResponse = await upload({
-          // Authentication parameters
           expire,
           token,
           signature,
@@ -148,18 +133,10 @@ function ImageUploadPopUp({
           toast.success("Image upload successfully!");
         }
       } catch (error) {
-        if (error instanceof ImageKitAbortError) {
-          toast.error(`Upload aborted: , ${error.reason}`);
-        } else if (error instanceof ImageKitInvalidRequestError) {
-          toast.error(`Invalid request:, ${error.message}`);
-        } else if (error instanceof ImageKitUploadNetworkError) {
-          toast.error(`Network error:, ${error.message}`);
-        } else if (error instanceof ImageKitServerError) {
-          toast.error(`Server error:, ${error.message}`);
-        } else {
-          // Handle any other errors that may occur.
-          toast.error(`Upload error:, ${error}`);
+        if (error instanceof Error) {
+          return toast.error(error.message);
         }
+        toast.error("Upload failed. Please try again.");
       } finally {
         setIsUploading(false);
       }
@@ -170,156 +147,167 @@ function ImageUploadPopUp({
   });
 
   return (
-    <div>
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-6xl! h-[90vh]! overflow-y-auto">
-          {/* Header */}
-          <DialogHeader className="relative p-5">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-5xl h-[85vh] p-0 flex flex-col bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+        {/* --- HEADER --- */}
+        <div className="shrink-0 p-6 bg-white border-b border-slate-100 z-10 relative">
+          <DialogHeader>
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl blur-xl opacity-50" />
-                <div className="relative w-12 h-12 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-200 shrink-0">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold text-white mb-1">
+                <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
                   {title}
+                  {uploadedImage && (
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-50 text-emerald-600 border-emerald-200 font-medium"
+                    >
+                      Uploaded
+                    </Badge>
+                  )}
                 </DialogTitle>
-                <DialogDescription className="text-gray-400 text-sm">
-                  Upload and apply AI-powered transformations
+                <DialogDescription className="text-slate-500 mt-1">
+                  Upload assets and enhance them with AI transformations.
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
+        </div>
 
-          <Tabs
-            value={activeTab}
-            onValueChange={() =>
-              setActiveTab(activeTab === "transform" ? "upload" : "transform")
-            }
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="upload">Upload</TabsTrigger>
-              <TabsTrigger value="transform" disabled={!uploadedImage}>
+        {/* --- TABS CONTAINER --- */}
+        <Tabs
+          value={activeTab}
+          onValueChange={(val: string) =>
+            setActiveTab(val as "transform" | "upload")
+          }
+          className="flex-1 flex flex-col min-h-0"
+        >
+          {/* Tabs List */}
+          <div className="shrink-0 px-6 py-3 bg-slate-50/50 border-b border-slate-100">
+            <TabsList className="bg-white p-1 border border-slate-200 rounded-xl h-auto inline-flex w-full sm:w-auto">
+              <TabsTrigger
+                value="upload"
+                className="flex-1 sm:flex-none rounded-lg px-6 py-2 text-sm font-semibold data-[state=active]:bg-indigo-50! data-[state=active]:text-indigo-700! transition-all gap-2"
+              >
+                <UploadIcon className="w-4 h-4" />
+                Upload
+              </TabsTrigger>
+              <TabsTrigger
+                value="transform"
+                disabled={!uploadedImage}
+                className="flex-1 sm:flex-none rounded-lg px-6 py-2 text-sm font-semibold data-[state=active]:bg-indigo-50! data-[state=active]:text-indigo-700! transition-all gap-2"
+              >
+                <Wand2 className="w-4 h-4" />
                 Transform
               </TabsTrigger>
             </TabsList>
+          </div>
 
-            {/* image upload tab */}
-            <TabsContent value="upload" className="space-y-4">
+          {/* Scrollable Content Area */}
+          <div className="flex-1 overflow-y-auto bg-slate-50/30 p-6 relative">
+            {/* UPLOAD TAB */}
+            <TabsContent
+              value="upload"
+              className="h-full mt-0 outline-none animate-in fade-in slide-in-from-bottom-2"
+            >
               <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                className={`h-full w-full border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group relative overflow-hidden bg-white ${
                   isDragActive
-                    ? "border-purple-400 bg-purple-400/10"
-                    : "border-slate-600 hover:border-slate-500"
+                    ? "border-indigo-500 bg-indigo-50/50 scale-[0.99]"
+                    : "border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-50/50"
                 }`}
               >
                 <input {...getInputProps()} />
 
-                {/* image drop card or loader */}
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-size-[20px_20px] opacity-50 pointer-events-none" />
+
                 {isUploading ? (
-                  <div className="text-center space-y-5">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full blur-3xl opacity-50 animate-pulse" />
-                      <Loader2 className="relative w-14 h-14 text-purple-400 animate-spin mx-auto" />
+                  <div className="text-center space-y-6 relative z-10">
+                    <div className="relative inline-flex">
+                      <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-20 animate-pulse" />
+                      <Loader2 className="w-16 h-16 text-indigo-600 animate-spin relative" />
                     </div>
                     <div>
-                      <p className="text-xl font-semibold text-white mb-2">
-                        Uploading...
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        Processing your file
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">
+                        Uploading Asset...
+                      </h3>
+                      <p className="text-slate-500">
+                        Optimizing for web performance
                       </p>
                     </div>
                   </div>
+                ) : uploadedImage ? (
+                  // Success State
+                  <div className="text-center space-y-6 relative z-10 animate-in zoom-in duration-300">
+                    <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-sm">
+                      <Check className="w-10 h-10 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        Upload Complete!
+                      </h3>
+                      <p className="text-slate-500 mb-6 font-mono text-sm bg-slate-100 px-3 py-1 rounded-md inline-block">
+                        {uploadedImage.name}
+                      </p>
+                      <br />
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTab("transform");
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200 px-8 h-12 font-bold"
+                      >
+                        Continue to Transform{" "}
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-4">
+                      Drag & drop a new file to replace
+                    </p>
+                  </div>
                 ) : (
-                  <div className="text-center space-y-7">
-                    <div className="relative inline-block">
-                      <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity" />
-                      <div className="relative w-24 h-24 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <UploadIcon className="w-12 h-12 text-white" />
-                      </div>
+                  // Idle State
+                  <div className="text-center space-y-6 relative z-10 px-4">
+                    <div className="w-24 h-24 bg-indigo-50 rounded-4xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner ring-4 ring-white">
+                      <LucideImage className="w-10 h-10 text-indigo-600" />
                     </div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-2xl font-bold text-white mb-2">
-                          {isDragActive ? "Drop it here!" : "Upload Your Image"}
-                        </p>
-                        <p className="text-gray-400 text-base">
-                          Drag and drop or click to browse
-                        </p>
-                      </div>
-
-                      <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
-                        <Zap className="w-4 h-4 text-purple-400" />
-                        <span className="text-sm text-gray-300 font-medium">
-                          Click to select
-                        </span>
-                      </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        {isDragActive ? "Drop to Upload" : "Upload Media"}
+                      </h3>
+                      <p className="text-slate-500 max-w-xs mx-auto">
+                        Drag & drop your image here, or click to browse.
+                      </p>
                     </div>
-
-                    <div className="flex items-center justify-center gap-6 pt-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <ImageIcon className="w-4 h-4" />
-                        <span>JPG, PNG, WebP</span>
-                      </div>
-                      <div className="w-px h-4 bg-white/10" />
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <FileCheck className="w-4 h-4" />
-                        <span>Max 10MB</span>
-                      </div>
+                    <div className="flex items-center justify-center gap-4 pt-4">
+                      <Badge
+                        variant="secondary"
+                        className="bg-white border-slate-200 text-slate-500 font-normal py-1.5 px-3"
+                      >
+                        JPG, PNG, WEBP
+                      </Badge>
+                      <div className="w-1 h-1 bg-slate-300 rounded-full" />
+                      <Badge
+                        variant="secondary"
+                        className="bg-white border-slate-200 text-slate-500 font-normal py-1.5 px-3"
+                      >
+                        Max 10MB
+                      </Badge>
                     </div>
                   </div>
                 )}
               </div>
-
-              {/* Upload Success State */}
-              {uploadedImage && (
-                <div className="bg-linear-to-br from-emerald-500/10 to-teal-500/10 rounded-2xl p-5 border border-emerald-500/20 backdrop-blur-sm">
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="text-white font-semibold text-base">
-                          Upload Successful!
-                        </h4>
-                        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
-                          Ready
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-400 mb-3">
-                        <span className="truncate max-w-[200px]">
-                          {uploadedImage.name}
-                        </span>
-                        <span>•</span>
-                        <span>
-                          {uploadedImage.width} × {uploadedImage.height}
-                        </span>
-                        <span>•</span>
-                        <span>{Math.round(uploadedImage.size! / 1024)}KB</span>
-                      </div>
-                      <Button
-                        onClick={() => setActiveTab("transform")}
-                        className="bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200"
-                      >
-                        <Wand2 className="h-4 w-4 mr-2" />
-                        Transform Image
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </TabsContent>
 
-            {/* image transform tab */}
-            <TabsContent value="transform" className="space-y-6">
+            {/* TRANSFORM TAB */}
+            <TabsContent
+              value="transform"
+              className="h-full mt-0 outline-none animate-in fade-in slide-in-from-right-4"
+            >
               <ImageTransform
                 form={{ reset, setValue, watchValue }}
                 handleClose={handleClose}
@@ -329,10 +317,10 @@ function ImageUploadPopUp({
                 uploadedImage={uploadedImage}
               />
             </TabsContent>
-          </Tabs>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </div>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
 }
 

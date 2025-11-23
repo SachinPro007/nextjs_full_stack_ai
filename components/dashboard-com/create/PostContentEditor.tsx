@@ -10,6 +10,7 @@ import {
   Upload,
   Trash2,
   Zap,
+  Type,
 } from "lucide-react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -23,6 +24,11 @@ import ReactQuill from "react-quill-new";
 
 const QuillWrapper = dynamic(() => import("@/components/other/QuillWrapper"), {
   ssr: false,
+  loading: () => (
+    <div className="h-96 w-full bg-slate-50 animate-pulse rounded-xl border border-slate-100 flex items-center justify-center text-slate-400">
+      Loading Editor...
+    </div>
+  ),
 });
 
 if (typeof window !== "undefined") {
@@ -46,8 +52,9 @@ const quillConfig = {
           { indent: "+1" },
         ],
         ["image", "video"],
+        ["clean"],
       ],
-      handlers: { image: function () {} },
+      handlers: { image: function () {} }, // Handled by custom logic
     },
   },
   formats: [
@@ -169,235 +176,193 @@ function PostContentEditor({
 
   return (
     <>
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        <div className="space-y-8">
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        <div className="space-y-10">
           {/* Featured Image Section */}
-          {watchValue.featuredImage ? (
-            <div className="relative group overflow-hidden rounded-3xl">
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
+          <div className="group relative">
+            {watchValue.featuredImage ? (
+              <div className="relative overflow-hidden rounded-4xl shadow-xl shadow-slate-200 border border-slate-200 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-100">
+                <Image
+                  src={watchValue.featuredImage}
+                  alt="Featured"
+                  width={1200}
+                  height={600}
+                  className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105"
+                />
 
-              <Image
-                src={watchValue.featuredImage}
-                alt="Featured"
-                width={1200}
-                height={600}
-                className="w-full h-96 object-cover"
-              />
-
-              {/* Hover Actions */}
-              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 flex items-center justify-center gap-4">
-                <Button
-                  onClick={() => onImageUpload("featured")}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-2xl px-6 py-3 transition-all duration-200"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Change Image
-                </Button>
-                <Button
-                  onClick={() => setValue("featuredImage", "")}
-                  className="bg-red-500/20 hover:bg-red-500/30 backdrop-blur-md border border-red-500/30 text-red-400 rounded-2xl px-6 py-3 transition-all duration-200"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Remove
-                </Button>
-              </div>
-
-              {/* Image Badge */}
-              <div className="absolute top-6 right-6 z-20">
-                <div className="bg-black/50 backdrop-blur-md rounded-full px-4 py-2 border border-white/10">
-                  <span className="text-white text-sm font-medium">
-                    Featured Image
-                  </span>
+                {/* Image Overlay Actions */}
+                <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4">
+                  <Button
+                    onClick={() => onImageUpload("featured")}
+                    className="bg-white text-slate-900 hover:bg-slate-100 border-0 rounded-xl h-12 px-6 font-semibold shadow-lg transition-transform hover:-translate-y-1"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Change Cover
+                  </Button>
+                  <Button
+                    onClick={() => setValue("featuredImage", "")}
+                    className="bg-rose-500/20 hover:bg-rose-500/30 backdrop-blur text-rose-100 border border-rose-500/30 rounded-xl h-12 px-6 transition-transform hover:-translate-y-1"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Remove
+                  </Button>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => onImageUpload("featured")}
-              className="relative w-full h-72 rounded-3xl border-2 border-dashed border-white/10 bg-linear-to-br from-white/5 to-transparent hover:border-white/20 hover:from-white/10 transition-all duration-300 group overflow-hidden"
-            >
-              {/* Animated gradient background */}
-              <div className="absolute inset-0 bg-linear-to-br from-purple-500/10 via-transparent to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Content */}
-              <div className="relative z-10 flex flex-col items-center justify-center h-full space-y-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                  <div className="relative w-20 h-20 bg-linear-to-br from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
-                    <ImageIcon className="h-10 w-10 text-white" />
+                {/* Badge */}
+                <div className="absolute top-6 left-6">
+                  <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/20 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-indigo-500" />
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                      Cover Image
+                    </span>
                   </div>
                 </div>
-
-                <div className="text-center space-y-2">
-                  <p className="text-white text-xl font-semibold">
-                    Add a stunning cover image
-                  </p>
-                  <p className="text-gray-400 text-sm max-w-md">
-                    Upload and transform with AI-powered tools • Supports JPG,
-                    PNG, WebP
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 px-6 py-3 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
-                  <Upload className="h-4 w-4 text-gray-300" />
-                  <span className="text-gray-300 text-sm font-medium">
-                    Click to upload
-                  </span>
-                </div>
               </div>
-            </button>
-          )}
+            ) : (
+              <button
+                onClick={() => onImageUpload("featured")}
+                className="w-full h-[300px] rounded-4xl border-2 border-dashed border-slate-200 hover:border-indigo-300 bg-slate-50 hover:bg-indigo-50/30 transition-all duration-300 group flex flex-col items-center justify-center gap-4 overflow-hidden relative"
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-size-[16px_16px] opacity-50" />
+
+                <div className="relative z-10 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 group-hover:scale-110 transition-transform duration-300">
+                  <ImageIcon className="h-8 w-8 text-indigo-500" />
+                </div>
+                <div className="relative z-10 text-center space-y-1">
+                  <p className="text-slate-900 font-bold text-lg">
+                    Add Cover Image
+                  </p>
+                  <p className="text-slate-500 text-sm">
+                    Drag & drop or click to upload
+                  </p>
+                </div>
+              </button>
+            )}
+          </div>
 
           {/* Title Input */}
-          <div className="space-y-3">
+          <div className="relative group">
+            <div className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden xl:block">
+              <Type className="w-6 h-6 text-slate-300" />
+            </div>
             <Input
               {...register("title")}
-              placeholder="Untitled Post"
-              className="border-0 text-5xl font-bold bg-transparent placeholder:text-gray-700 text-white p-4 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
-              style={{ fontSize: "3rem", lineHeight: "1.1" }}
+              placeholder="Enter your title here..."
+              className="border-0 bg-transparent px-0 text-4xl md:text-5xl font-extrabold text-slate-900 placeholder:text-slate-300 h-auto py-4 focus-visible:ring-0 focus-visible:ring-offset-0 leading-tight tracking-tight transition-colors"
             />
             {errors.title && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2">
-                <span>⚠️</span>
-                <p>{errors.title.message?.toString()}</p>
+              <div className="mt-2 flex items-center gap-2 text-rose-500 text-sm font-medium animate-in slide-in-from-top-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-rose-500" />
+                {errors.title.message?.toString()}
               </div>
             )}
           </div>
 
           {/* AI Tools Section */}
-          <div className="bg-linear-to-br from-white/5 to-white/2 rounded-3xl p-6 border border-white/10 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-2 border border-slate-200 shadow-sm">
             {!hasContent ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    <Zap className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">
-                      AI Content Generator
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Let AI create your first draft based on your title
-                    </p>
-                  </div>
+              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                <div className="shrink-0 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                  <Wand2 className="w-8 h-8 text-violet-600" />
                 </div>
-
+                <div className="flex-1 space-y-1">
+                  <h3 className="font-bold text-slate-900 text-lg">
+                    Magic Draft
+                  </h3>
+                  <p className="text-slate-500 text-sm max-w-md">
+                    Stuck? Let our AI write a first draft based on your title.
+                  </p>
+                </div>
                 <Button
                   onClick={() => handleAI("generate")}
                   disabled={!hasTitle || isGenerating || isImproving}
-                  className="w-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-2xl py-6 text-base font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full md:w-auto bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-200 h-12 px-8 rounded-xl font-bold transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
                 >
-                  <Wand2 className="h-5 w-5 mr-2" />
-                  {isGenerating ? "Generating..." : "Generate Content with AI"}
+                  {isGenerating ? (
+                    <>
+                      <BarLoader
+                        color="white"
+                        width={20}
+                        height={2}
+                        className="mr-2"
+                      />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 mr-2" /> Generate with AI
+                    </>
+                  )}
                 </Button>
-
-                {!hasTitle && (
-                  <p className="text-center text-xs text-gray-500">
-                    💡 Add a title above to unlock AI content generation
-                  </p>
-                )}
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                    <Sparkles className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">
-                      AI Content Improver
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Enhance, expand, or simplify your content instantly
-                    </p>
-                  </div>
+              <div className="space-y-4 p-4">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider px-2">
+                  <Sparkles className="w-3 h-3" /> AI Assistant
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     {
                       type: "enhance",
                       icon: Sparkles,
+                      label: "Enhance Content",
+                      color: "emerald",
                       gradient: "from-emerald-500 to-teal-500",
-                      bg: "bg-emerald-500/10",
-                      border: "border-emerald-500/30",
-                      text: "text-emerald-400",
-                      label: "Enhance",
-                      desc: "Improve quality",
                     },
                     {
                       type: "expand",
                       icon: Plus,
+                      label: "Expand Text",
+                      color: "blue",
                       gradient: "from-blue-500 to-cyan-500",
-                      bg: "bg-blue-500/10",
-                      border: "border-blue-500/30",
-                      text: "text-blue-400",
-                      label: "Expand",
-                      desc: "Add more detail",
                     },
                     {
                       type: "simplify",
                       icon: Minus,
-                      gradient: "from-orange-500 to-amber-500",
-                      bg: "bg-orange-500/10",
-                      border: "border-orange-500/30",
-                      text: "text-orange-400",
                       label: "Simplify",
-                      desc: "Make concise",
+                      color: "amber",
+                      gradient: "from-amber-500 to-orange-500",
                     },
-                  ].map(
-                    ({
-                      type,
-                      icon: Icon,
-                      gradient,
-                      bg,
-                      border,
-                      text,
-                      label,
-                      desc,
-                    }) => (
-                      <Button
-                        key={type}
-                        onClick={() => handleAI("improve", type)}
-                        disabled={isGenerating || isImproving}
-                        className={`group relative overflow-hidden ${bg} hover:${bg} ${border} border rounded-2xl py-6 transition-all duration-200 disabled:opacity-50`}
+                  ].map((tool) => (
+                    <Button
+                      key={tool.type}
+                      onClick={() => handleAI("improve", tool.type)}
+                      disabled={isGenerating || isImproving}
+                      variant="outline"
+                      className={`group relative h-auto py-3 px-4 border-slate-200 hover:border-${tool.color}-200 hover:bg-${tool.color}-50/50 transition-all justify-start gap-3 rounded-xl`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-lg bg-linear-to-br ${tool.gradient} flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform`}
                       >
-                        <div className="flex justify-center items-center gap-2">
-                          <div
-                            className={`w-10 h-10 rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center group-hover:scale-110 transition-transform`}
-                          >
-                            <Icon className="h-5 w-5 text-white" />
-                          </div>
-                          <div className="text-center">
-                            <p className={`${text} font-semibold text-sm`}>
-                              {label}
-                            </p>
-                            <p className="text-gray-500 text-xs">{desc}</p>
-                          </div>
-                        </div>
-                      </Button>
-                    ),
-                  )}
+                        <tool.icon className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <span
+                          className={`block text-sm font-bold text-slate-700 group-hover:text-${tool.color}-700`}
+                        >
+                          {tool.label}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
                 </div>
-              </div>
-            )}
 
-            {(isGenerating || isImproving) && (
-              <div className="mt-4 space-y-2">
-                <BarLoader width={"100%"} color="#A78BFA" height={3} />
-                <p className="text-center text-sm text-gray-400">
-                  {isGenerating
-                    ? "✨ Generating amazing content..."
-                    : "🔮 Improving your content..."}
-                </p>
+                {(isGenerating || isImproving) && (
+                  <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-xl border border-indigo-100 animate-in fade-in">
+                    <BarLoader color="#6366f1" width={100} />
+                    <span className="text-xs font-bold text-indigo-600">
+                      AI is working...
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Rich Text Editor */}
-          <div className="bg-linear-to-br from-white/5 to-white/2 rounded-3xl p-8 border border-white/10 backdrop-blur-sm">
-            <div className="prose prose-lg max-w-none">
+          <div className="relative">
+            <div className="prose prose-lg max-w-none prose-slate prose-headings:font-bold prose-p:text-slate-600 prose-a:text-indigo-600 hover:prose-a:text-indigo-500">
               <QuillWrapper
                 ref={setQuillRef}
                 theme="snow"
@@ -405,139 +370,120 @@ function PostContentEditor({
                 onChange={(content) => setValue("content", content)}
                 formats={quillConfig.formats}
                 modules={getQuillModules()}
-                placeholder="Start writing your story... ✨"
-                style={{
-                  minHeight: "500px",
-                  fontSize: "1.125rem",
-                  lineHeight: "1.8",
-                }}
+                placeholder="Tell your story..."
               />
-
-              {errors.content && (
-                <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mt-4">
-                  <span>⚠️</span>
-                  <p>{errors.content.message?.toString()}</p>
-                </div>
-              )}
             </div>
+            {errors.content && (
+              <div className="mt-2 flex items-center gap-2 text-rose-500 text-sm font-medium animate-in slide-in-from-top-1">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-rose-500" />
+                {errors.content.message?.toString()}
+              </div>
+            )}
           </div>
         </div>
       </main>
 
+      {/* --- QUILL LIGHT THEME OVERRIDES --- */}
       <style jsx global>{`
-        .ql-editor {
-          color: white !important;
-          font-size: 1.125rem !important;
-          line-height: 1.8 !important;
-          padding: 0 !important;
-          min-height: 500px !important;
-          overflow-y: visible !important;
-        }
-        .ql-editor::before {
-          color: rgb(75, 85, 99) !important;
-          font-style: normal !important;
-        }
-        .ql-toolbar {
-          border: none !important;
-          padding: 1rem !important;
+        .ql-toolbar.ql-snow {
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 12px !important;
+          padding: 12px !important;
+          background: white !important;
           position: sticky !important;
           top: 85px !important;
-          background: rgba(0, 0, 0, 0.8) !important;
-          backdrop-filter: blur(20px) !important;
           z-index: 30 !important;
-          border-radius: 1rem !important;
-          margin-bottom: 2rem !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+          margin-bottom: 24px !important;
         }
-        .ql-container {
+
+        .ql-container.ql-snow {
           border: none !important;
+          font-family: inherit !important;
         }
-        .ql-snow .ql-tooltip {
-          background: rgb(24, 24, 27) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          color: white !important;
-          border-radius: 0.75rem !important;
-          padding: 0.75rem !important;
+
+        .ql-editor {
+          min-height: 400px !important;
+          padding: 0 !important;
+          font-size: 1.125rem !important;
+          line-height: 1.8 !important;
+          color: #334155 !important; /* slate-700 */
         }
-        .ql-snow .ql-picker {
-          color: white !important;
+
+        .ql-editor.ql-blank::before {
+          color: #cbd5e1 !important; /* slate-300 */
+          font-style: normal !important;
+          font-weight: 500 !important;
         }
-        .ql-snow .ql-picker-options {
-          background: rgb(24, 24, 27) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          border-radius: 0.75rem !important;
-          padding: 0.5rem !important;
-        }
-        .ql-snow .ql-fill,
-        .ql-snow .ql-stroke.ql-fill {
-          fill: white !important;
-        }
-        .ql-snow .ql-stroke {
-          stroke: white !important;
-        }
-        .ql-snow .ql-picker-label:hover,
-        .ql-snow .ql-picker-item:hover {
-          color: rgb(168, 85, 247) !important;
-        }
+
+        /* Headings */
         .ql-editor h1 {
-          font-size: 2.5rem !important;
-          font-weight: 700 !important;
-          color: white !important;
-          margin: 1.5rem 0 !important;
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: #0f172a; /* slate-900 */
+          margin-top: 2rem;
+          margin-bottom: 1rem;
         }
         .ql-editor h2 {
-          font-size: 2rem !important;
-          font-weight: 600 !important;
-          color: white !important;
-          margin: 1.25rem 0 !important;
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1e293b; /* slate-800 */
+          margin-top: 1.75rem;
+          margin-bottom: 0.75rem;
         }
-        .ql-editor h3 {
-          font-size: 1.5rem !important;
-          font-weight: 600 !important;
-          color: white !important;
-          margin: 1rem 0 !important;
-        }
+
+        /* Quote Block */
         .ql-editor blockquote {
-          border-left: 4px solid rgb(168, 85, 247) !important;
-          background: rgba(168, 85, 247, 0.1) !important;
-          color: rgb(226, 232, 240) !important;
+          border-left: 4px solid #6366f1 !important; /* indigo-500 */
+          background: #f8fafc !important; /* slate-50 */
+          color: #475569 !important; /* slate-600 */
           padding: 1rem 1.5rem !important;
-          margin: 1rem 0 !important;
+          border-radius: 0 0.5rem 0.5rem 0 !important;
           font-style: italic !important;
-          border-radius: 0.5rem !important;
         }
-        .ql-editor a {
-          color: rgb(168, 85, 247) !important;
-          text-decoration: underline !important;
-        }
-        .ql-editor code {
-          background: rgba(255, 255, 255, 0.1) !important;
-          color: rgb(251, 146, 60) !important;
-          padding: 0.25rem 0.5rem !important;
-          border-radius: 0.375rem !important;
+
+        /* Code Block */
+        .ql-editor pre.ql-syntax {
+          background: #1e293b !important; /* slate-800 */
+          color: #e2e8f0 !important; /* slate-200 */
+          border-radius: 0.75rem !important;
+          padding: 1.5rem !important;
           font-family: "Fira Code", monospace !important;
         }
-        .ql-editor pre {
-          background: rgba(0, 0, 0, 0.5) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          border-radius: 0.75rem !important;
-          padding: 1rem !important;
-          margin: 1rem 0 !important;
+
+        /* Toolbar Icons */
+        .ql-snow .ql-stroke {
+          stroke: #64748b !important; /* slate-500 */
         }
-        .ql-editor img {
-          border-radius: 1rem !important;
-          margin: 1.5rem 0 !important;
+        .ql-snow .ql-fill {
+          fill: #64748b !important;
         }
-        .ql-toolbar button {
-          border-radius: 0.5rem !important;
-          transition: all 0.2s !important;
+        .ql-snow .ql-picker {
+          color: #64748b !important;
         }
-        .ql-toolbar button:hover {
-          background: rgba(255, 255, 255, 0.1) !important;
+
+        /* Toolbar Hover States */
+        .ql-snow .ql-picker-label:hover,
+        .ql-snow .ql-picker-item:hover {
+          color: #6366f1 !important; /* indigo-500 */
         }
+        .ql-snow .ql-picker-label:hover .ql-stroke,
+        .ql-snow button:hover .ql-stroke {
+          stroke: #6366f1 !important;
+        }
+        .ql-snow button.ql-active .ql-stroke {
+          stroke: #6366f1 !important;
+        }
+        .ql-snow button:hover .ql-fill,
+        .ql-snow button.ql-active .ql-fill {
+          fill: #6366f1 !important;
+        }
+
+        /* Active Button Background */
+        .ql-toolbar button:hover,
         .ql-toolbar button.ql-active {
-          background: rgba(168, 85, 247, 0.2) !important;
-          color: rgb(168, 85, 247) !important;
+          background: #eef2ff !important; /* indigo-50 */
+          border-radius: 6px !important;
         }
       `}</style>
     </>

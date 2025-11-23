@@ -2,7 +2,6 @@
 
 import PostCard, { PostWithAuthor } from "@/components/dashboard-com/PostCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,20 +17,19 @@ import {
   useConvexQuery,
 } from "@/hooks/use-convex-query";
 import {
+  BarChart3,
   FileText,
   Filter,
+  LayoutGrid,
   PlusCircle,
-  Search,
-  BarChart3,
   RefreshCw,
+  Search,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { BarLoader } from "react-spinners";
 import { toast } from "sonner";
-
-// types
 
 function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,14 +39,14 @@ function PostsPage() {
   const router = useRouter();
   const now = currentTime;
 
-  // Get posts with refetch capability
+  // --- Data Fetching ---
   const { data: posts, isLoading } = useConvexQuery(
     api.posts.getUserAllPosts,
   ) as { data: PostWithAuthor[] | undefined; isLoading: boolean };
 
   const deletePost = useConvexMutation(api.posts.deletePost);
 
-  // Filter posts
+  // --- Logic: Filter & Sort ---
   const filteredPosts = useMemo(() => {
     if (!posts) return [];
 
@@ -65,7 +63,6 @@ function PostsPage() {
       return matchesSearch && matchesStatus;
     });
 
-    // Sort posts
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
@@ -99,7 +96,7 @@ function PostsPage() {
     return filtered;
   }, [posts, searchQuery, statusFilter, sortBy]);
 
-  // Stats calculation
+  // --- Logic: Stats ---
   const stats = useMemo(() => {
     if (!posts) return null;
 
@@ -112,209 +109,249 @@ function PostsPage() {
           p.status === "published" && p.scheduledFor && p.scheduledFor > now,
       ).length,
       totalViews: posts.reduce((sum, post) => sum + (post.viewCount || 0), 0),
-      totalLikes: posts.reduce((sum, post) => sum + (post.likeCount || 0), 0),
     };
   }, [posts, now]);
 
-  // Delete post
+  // --- Handlers ---
   const handleDeletePost = async (post: PostWithAuthor) => {
     if (!window.confirm("Are you sure you want to delete this post?")) {
       return;
     }
-
     try {
       await deletePost.mutate({ _id: post._id });
       toast.success("Post deleted successfully");
     } catch (error) {
       if (error instanceof Error) {
-        toast.error("Failed to delete post");
+        toast.error(error.message);
       }
+      toast.error("Failed to delete post");
     }
   };
 
-  // Edit post
   const handleEditPost = (post: PostWithAuthor) => {
     router.push(`/dashboard/posts/edit/${post._id}`);
   };
 
-  // refresh function
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    // Simulate refresh for UX (Convex is real-time, but this gives feedback)
     setTimeout(() => {
       setIsRefreshing(false);
-    }, 1000);
+      toast.success("Dashboard synced");
+    }, 800);
   };
 
-  // Loading state
+  // --- Loading View ---
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <BarLoader width={200} color="#3b82f6" />
-          <p className="text-slate-400">Loading your posts...</p>
+      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+        <div className="p-4 rounded-full bg-white shadow-xl shadow-indigo-100 animate-bounce">
+          <Sparkles className="h-8 w-8 text-indigo-600" />
         </div>
+        <p className="mt-4 text-slate-500 font-medium animate-pulse">
+          Loading your masterpieces...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-4 lg:p-8">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl lg:text-4xl font-bold gradient-text-primary">
-            My Posts
-          </h1>
-          <p className="text-slate-400 text-lg">
-            Manage and track your content performance
-          </p>
-
-          {/* Stats */}
-          {stats && (
-            <div className="flex flex-wrap gap-4 pt-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">
-                  {stats.published} Published
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">
-                  {stats.draft} Drafts
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-sm text-slate-300">
-                  {stats.scheduled} Scheduled
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-purple-500" />
-                <span className="text-sm text-slate-300">
-                  {stats.totalViews} total views
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-          <Button
-            variant="outline"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
-          <Link href="/dashboard/create" className="flex-1 lg:flex-none">
-            <Button variant="default" className="w-full lg:w-auto">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Create New Post
-            </Button>
-          </Link>
-        </div>
+    <div className="relative min-h-screen bg-slate-50/50 pb-20 pt-24 px-6">
+      {/* --- BACKGROUND DECORATION --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-size-[24px_24px] opacity-60" />
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-indigo-100/40 blur-[100px] rounded-full opacity-70" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-violet-100/40 blur-[100px] rounded-full opacity-70" />
       </div>
 
-      {/* Filters and Controls */}
-      <Card className="card-glass">
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
-            {/* Search */}
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search posts by title or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-slate-800/50 border-slate-600 focus:border-purple-500 transition-colors"
-              />
+      <div className="max-w-7xl mx-auto relative z-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        {/* --- HEADER --- */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-3">
+              <LayoutGrid className="w-4 h-4 text-indigo-600" />
+              <span className="text-xs font-bold text-indigo-600 tracking-wide uppercase">
+                Content Manager
+              </span>
             </div>
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+              My Posts
+            </h1>
+            <p className="text-lg text-slate-500 max-w-xl">
+              Create, edit, and track the performance of your articles.
+            </p>
+          </div>
 
-            <div className="flex flex-wrap gap-3 w-full lg:w-auto">
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-40 bg-slate-800/50 border-slate-600">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex gap-3 w-full lg:w-auto">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="hidden sm:flex bg-white hover:bg-slate-50 text-slate-600 border-slate-200 rounded-xl shadow-sm"
+            >
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin text-indigo-600" : ""}`}
+              />
+              Sync
+            </Button>
+            <Link href="/dashboard/create" className="flex-1 lg:flex-none">
+              <Button className="w-full lg:w-auto h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 transition-transform hover:-translate-y-0.5">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Create New Post
+              </Button>
+            </Link>
+          </div>
+        </div>
 
-              {/* Sort */}
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-40 bg-slate-800/50 border-slate-600">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="oldest">Oldest First</SelectItem>
-                  <SelectItem value="updated">Recently Updated</SelectItem>
-                  <SelectItem value="mostViews">Most Views</SelectItem>
-                  <SelectItem value="mostLikes">Most Likes</SelectItem>
-                  <SelectItem value="alphabetical">A-Z</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* --- STATS STRIP --- */}
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+              <span className="text-2xl font-black text-slate-900">
+                {stats.published}
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-xs font-bold text-slate-500 uppercase">
+                  Published
+                </span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+              <span className="text-2xl font-black text-slate-900">
+                {stats.draft}
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-2 h-2 rounded-full bg-amber-400" />
+                <span className="text-xs font-bold text-slate-500 uppercase">
+                  Drafts
+                </span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+              <span className="text-2xl font-black text-slate-900">
+                {stats.scheduled}
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-xs font-bold text-slate-500 uppercase">
+                  Scheduled
+                </span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+              <span className="text-2xl font-black text-slate-900">
+                {stats.totalViews}
+              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <BarChart3 className="w-3 h-3 text-violet-500" />
+                <span className="text-xs font-bold text-slate-500 uppercase">
+                  Total Views
+                </span>
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        )}
 
-      {/* Content */}
-      {filteredPosts.length === 0 ? (
-        <Card className="card-glass">
-          <CardContent className="p-12 text-center">
-            <FileText className="h-16 w-16 text-slate-400 mx-auto mb-4 opacity-50" />
-            <h3 className="text-xl font-semibold text-white mb-2">
+        {/* --- CONTROLS TOOLBAR --- */}
+        <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm mb-8 flex flex-col md:flex-row gap-2 sticky top-4 z-20">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 text-slate-700"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <div className="h-8 w-px bg-slate-100 my-auto hidden md:block" />
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-[140px] h-10 border-0 bg-slate-50 hover:bg-slate-100 text-slate-600 focus:ring-0 rounded-xl">
+                <Filter className="h-4 w-4 mr-2 opacity-50" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full md:w-40 h-10 border-0 bg-slate-50 hover:bg-slate-100 text-slate-600 focus:ring-0 rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="updated">Recently Updated</SelectItem>
+                <SelectItem value="mostViews">Most Views</SelectItem>
+                <SelectItem value="mostLikes">Most Likes</SelectItem>
+                <SelectItem value="alphabetical">A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* --- CONTENT GRID --- */}
+        {filteredPosts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 px-4 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white/50">
+            <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
+              <FileText className="h-10 w-10 text-indigo-300" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
               {searchQuery || statusFilter !== "all"
-                ? "No posts found"
-                : "No posts yet"}
+                ? "No matching posts found"
+                : "No posts created yet"}
             </h3>
-            <p className="text-slate-400 mb-6 max-w-md mx-auto">
+            <p className="text-slate-500 mb-8 max-w-md mx-auto leading-relaxed">
               {searchQuery || statusFilter !== "all"
-                ? "Try adjusting your search or filters to find what you're looking for."
-                : "Start creating amazing content for your audience. Your first post is just a click away!"}
+                ? "Try adjusting your search terms or filters to find what you're looking for."
+                : "Your audience is waiting. Write something amazing today and share your knowledge with the world."}
             </p>
             {!searchQuery && statusFilter === "all" && (
               <Link href="/dashboard/create">
-                <Button variant="default" size="lg">
+                <Button
+                  size="lg"
+                  className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200"
+                >
                   <PlusCircle className="h-5 w-5 mr-2" />
-                  Create Your First Post
+                  Write Your First Post
                 </Button>
               </Link>
             )}
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <PostCard
-              key={post._id}
-              post={post}
-              showActions={true}
-              showAuthor={false}
-              onEdit={handleEditPost}
-              onDelete={handleDeletePost}
-            />
-          ))}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+            {filteredPosts.map((post) => (
+              // Ensuring the PostCard wrapper fits the theme
+              <div key={post._id} className="h-full">
+                <PostCard
+                  post={post}
+                  showActions={true}
+                  showAuthor={false}
+                  onEdit={handleEditPost}
+                  onDelete={handleDeletePost}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-      {/* Refresh loading overlay */}
+      {/* --- REFRESH OVERLAY --- */}
       {isRefreshing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-lg p-6 flex items-center gap-3">
-            <RefreshCw className="h-5 w-5 animate-spin text-purple-500" />
-            <span className="text-white">Refreshing posts...</span>
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl shadow-indigo-100 border border-indigo-50 flex items-center gap-4">
+            <div className="p-2 bg-indigo-50 rounded-full">
+              <RefreshCw className="h-5 w-5 animate-spin text-indigo-600" />
+            </div>
+            <span className="text-slate-700 font-bold">
+              Syncing latest data...
+            </span>
           </div>
         </div>
       )}

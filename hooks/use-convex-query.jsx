@@ -50,6 +50,7 @@ export const useConvexMutation = (mutation) => {
     try {
       const res = await mutationFn(...arg);
       setData(res);
+      return res;
     } catch (err) {
       setError(err.message);
     } finally {

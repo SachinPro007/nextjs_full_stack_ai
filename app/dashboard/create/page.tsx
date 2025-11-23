@@ -57,7 +57,7 @@ function CreatePost() {
   }
 
   return (
-    <div>
+    <div className="pt-20">
       <PostEditor initialData={existingDraft} />
     </div>
   );
