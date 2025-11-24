@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,16 +24,25 @@ import {
   Eye,
   Zap,
   Wand2,
+  ScanLine,
+  Monitor,
+  Smartphone,
+  Image as LucideImage,
+  Focus,
+  ArrowUp,
+  ArrowDown,
+  Square,
 } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
+// Updated Icons to Lucide (Logic/Values remain identical)
 const ASPECT_RATIOS = [
   {
     label: "Original",
     value: "original",
-    icon: "🔲",
+    icon: LucideImage,
     desc: "Keep original size",
   },
   {
@@ -39,7 +50,7 @@ const ASPECT_RATIOS = [
     value: "1:1",
     width: 400,
     height: 400,
-    icon: "⬜",
+    icon: Square,
     desc: "Perfect square",
   },
   {
@@ -47,7 +58,7 @@ const ASPECT_RATIOS = [
     value: "16:9",
     width: 800,
     height: 450,
-    icon: "🖼️",
+    icon: Monitor,
     desc: "Widescreen",
   },
   {
@@ -55,7 +66,7 @@ const ASPECT_RATIOS = [
     value: "4:5",
     width: 400,
     height: 500,
-    icon: "📱",
+    icon: ScanLine,
     desc: "Mobile friendly",
   },
   {
@@ -63,20 +74,26 @@ const ASPECT_RATIOS = [
     value: "9:16",
     width: 450,
     height: 800,
-    icon: "📲",
+    icon: Smartphone,
     desc: "Instagram story",
   },
-  { label: "Custom", value: "custom", icon: "✂️", desc: "Set your own" },
+  { label: "Custom", value: "custom", icon: Crop, desc: "Set your own" },
 ];
 
 const SMART_CROP_OPTIONS = [
-  { label: "Auto Detect", value: "auto", desc: "AI-powered focus", icon: "🤖" },
-  { label: "Face Focus", value: "face", desc: "Detect faces", icon: "👤" },
-  { label: "Center", value: "center", desc: "Center of image", icon: "🎯" },
-  { label: "Top", value: "top", desc: "Top portion", icon: "⬆️" },
-  { label: "Bottom", value: "bottom", desc: "Bottom portion", icon: "⬇️" },
+  {
+    label: "Auto Detect",
+    value: "auto",
+    desc: "AI-powered focus",
+    icon: Wand2,
+  },
+  { label: "Face Focus", value: "face", desc: "Detect faces", icon: Eye },
+  { label: "Center", value: "center", desc: "Center of image", icon: Focus },
+  { label: "Top", value: "top", desc: "Top portion", icon: ArrowUp },
+  { label: "Bottom", value: "bottom", desc: "Bottom portion", icon: ArrowDown },
 ];
 
+// types
 interface ImageTransformData {
   backgroundRemoved?: boolean | undefined;
   dropShadow?: boolean | undefined;
@@ -182,14 +199,14 @@ function ImageTransform({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Left Panel - Controls */}
+    <div className="flex flex-col gap-8 lg:gap-20">
+      {/* Panel - Controls */}
       <div className="space-y-6 max-h-[65vh] lg:max-h-[60vh]">
         {/* AI Tools Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
-              <Zap className="w-5 h-5 text-slate-900" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-indigo-600" />
             </div>
             <div className="min-w-0">
               <h3 className="text-base lg:text-lg font-bold text-slate-900">
@@ -202,14 +219,12 @@ function ImageTransform({
           </div>
 
           {/* Background Removal Card */}
-          <div className="group relative rounded-2xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 p-4 lg:p-5 hover:border-purple-500/30 transition-all duration-300 overflow-hidden">
-            <div className="absolute inset-0 bg-linear-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
+          <div className="group relative rounded-2xl bg-white border border-slate-200 p-4 lg:p-5 hover:border-indigo-300 transition-all duration-300 overflow-hidden shadow-sm">
             <div className="relative">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Scissors className="w-4 h-4 lg:w-5 lg:h-5 text-slate-900" />
+                  <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Scissors className="w-4 h-4 lg:w-5 lg:h-5 text-indigo-600" />
                   </div>
                   <div className="min-w-0">
                     <Label className="text-slate-900 font-semibold text-sm lg:text-base block">
@@ -225,7 +240,7 @@ function ImageTransform({
                   onCheckedChange={(checked) =>
                     setValue("backgroundRemoved", checked)
                   }
-                  className="data-[state=checked]:bg-linear-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-pink-500 shrink-0"
+                  className="bg-slate-200! data-[state=checked]:bg-indigo-600! shrink-0"
                 />
               </div>
             </div>
@@ -233,15 +248,13 @@ function ImageTransform({
 
           {/* Drop Shadow Card */}
           <div
-            className={`group relative rounded-2xl bg-linear-to-br from-white/5 to-white/2 border border-white/10 p-4 lg:p-5 hover:border-pink-500/30 transition-all duration-300 overflow-hidden ${!watchValue.backgroundRemoved && "opacity-50"}`}
+            className={`group relative rounded-2xl bg-white border border-slate-200 p-4 lg:p-5 hover:border-amber-300 transition-all duration-300 overflow-hidden shadow-sm ${!watchValue.backgroundRemoved && "opacity-50"}`}
           >
-            <div className="absolute inset-0 bg-linear-to-br from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
             <div className="relative">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-linear-to-br from-pink-500 to-rose-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-slate-900" />
+                  <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 text-amber-600" />
                   </div>
                   <div className="min-w-0">
                     <Label className="text-slate-900 font-semibold text-sm lg:text-base block">
@@ -256,9 +269,9 @@ function ImageTransform({
                 </div>
                 <Switch
                   checked={watchValue.dropShadow}
-                  disabled={!watchValue.backgroundRemoved}
                   onCheckedChange={(checked) => setValue("dropShadow", checked)}
-                  className="data-[state=checked]:bg-linear-to-r data-[state=checked]:from-pink-500 data-[state=checked]:to-rose-500 shrink-0"
+                  disabled={!watchValue.backgroundRemoved}
+                  className="bg-slate-200! data-[state=checked]:bg-indigo-600! border-transparent"
                 />
               </div>
             </div>
@@ -268,8 +281,8 @@ function ImageTransform({
         {/* Resize & Crop Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-blue-500 flex items-center justify-center shrink-0">
-              <Crop className="w-5 h-5 text-slate-900" />
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+              <Crop className="w-5 h-5 text-blue-600" />
             </div>
             <div className="min-w-0">
               <h3 className="text-base lg:text-lg font-bold text-slate-900">
@@ -283,7 +296,7 @@ function ImageTransform({
 
           {/* Aspect Ratio */}
           <div className="space-y-3">
-            <Label className="text-slate-900 font-medium text-sm flex items-center gap-2">
+            <Label className="text-slate-700 font-medium text-sm flex items-center gap-2">
               <Maximize2 className="w-4 h-4" />
               Aspect Ratio
             </Label>
@@ -291,18 +304,20 @@ function ImageTransform({
               value={watchValue.aspectRatio}
               onValueChange={(value) => setValue("aspectRatio", value)}
             >
-              <SelectTrigger className="bg-white/5 border-white/10 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
+              <SelectTrigger className="bg-white border-slate-200 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-slate-50 transition-colors py-6">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 rounded-xl">
+              <SelectContent className="bg-white border-slate-200 rounded-xl">
                 {ASPECT_RATIOS.map((ratio) => (
                   <SelectItem
                     key={ratio.value}
                     value={ratio.value}
-                    className="text-slate-900 hover:bg-white/5 rounded-lg my-1 cursor-pointer"
+                    className="text-slate-900 hover:bg-slate-50 rounded-lg my-1 cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-lg lg:text-xl">{ratio.icon}</span>
+                      <span className="text-lg lg:text-xl text-slate-500">
+                        <ratio.icon className="w-5 h-5" />
+                      </span>
                       <div className="min-w-0">
                         <div className="font-medium text-sm lg:text-base">
                           {ratio.label}
@@ -320,13 +335,13 @@ function ImageTransform({
 
           {/* Custom Dimensions */}
           {watchValue.aspectRatio === "custom" && (
-            <div className="p-4 rounded-xl bg-linear-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 space-y-3">
-              <p className="text-slate-900 text-sm font-medium">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 animate-in slide-in-from-top-2">
+              <p className="text-slate-700 text-sm font-medium">
                 Custom Dimensions
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label className="text-slate-900 text-xs font-medium">
+                  <Label className="text-slate-500 text-xs font-medium">
                     Width (px)
                   </Label>
                   <Input
@@ -337,11 +352,11 @@ function ImageTransform({
                     }
                     min="100"
                     max="2000"
-                    className="bg-white/5 border-white/10 text-slate-900 rounded-lg h-10"
+                    className="bg-white border-slate-200 text-slate-900 rounded-lg h-10"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-slate-900 text-xs font-medium">
+                  <Label className="text-slate-500 text-xs font-medium">
                     Height (px)
                   </Label>
                   <Input
@@ -352,7 +367,7 @@ function ImageTransform({
                     }
                     min="100"
                     max="2000"
-                    className="bg-white/5 border-white/10 text-slate-900 rounded-lg h-10"
+                    className="bg-white border-slate-200 text-slate-900 rounded-lg h-10"
                   />
                 </div>
               </div>
@@ -361,8 +376,8 @@ function ImageTransform({
 
           {/* Smart Crop Focus */}
           {watchValue.aspectRatio !== "original" && (
-            <div className="space-y-3">
-              <Label className="text-slate-900 font-medium text-sm flex items-center gap-2">
+            <div className="space-y-3 animate-in slide-in-from-top-2">
+              <Label className="text-slate-700 font-medium text-sm flex items-center gap-2">
                 <Eye className="w-4 h-4" />
                 Smart Crop Focus
               </Label>
@@ -370,19 +385,19 @@ function ImageTransform({
                 value={watchValue.smartCropFocus}
                 onValueChange={(value) => setValue("smartCropFocus", value)}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-white/10 transition-colors">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900 rounded-xl h-11 lg:h-12 hover:bg-slate-50 transition-colors py-6">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 rounded-xl">
+                <SelectContent className="bg-white border-slate-200 rounded-xl">
                   {SMART_CROP_OPTIONS.map((option) => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-slate-900 hover:bg-white/5 rounded-lg my-1 cursor-pointer"
+                      className="text-slate-900 hover:bg-slate-50 rounded-lg my-1 cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-lg lg:text-xl">
-                          {option.icon}
+                        <span className="text-lg lg:text-xl text-slate-500">
+                          <option.icon className="w-5 h-5" />
                         </span>
                         <div className="min-w-0">
                           <div className="font-medium text-sm lg:text-base">
@@ -402,11 +417,11 @@ function ImageTransform({
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-3 pt-4 border-t border-white/10">
+        <div className="space-y-3 pt-4 border-t border-slate-100">
           <Button
             onClick={applyTransformations}
             disabled={isTransforming}
-            className="w-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-500 hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 text-slate-900 rounded-xl h-11 lg:h-12 text-sm lg:text-base font-semibold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-200"
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl h-11 lg:h-12 text-sm lg:text-base font-semibold shadow-lg shadow-slate-200 transition-all duration-200 hover:-translate-y-0.5"
           >
             {isTransforming ? (
               <>
@@ -424,7 +439,7 @@ function ImageTransform({
           <Button
             onClick={resetTransformations}
             variant="outline"
-            className="w-full border-white/10 hover:bg-white/5 text-slate-900 rounded-xl h-11 lg:h-12"
+            className="w-full border-slate-200 hover:bg-slate-100! text-slate-600 hover:text-indigo-600 rounded-xl h-11 lg:h-12"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Reset All
@@ -432,11 +447,11 @@ function ImageTransform({
         </div>
       </div>
 
-      {/* Right Panel - Preview */}
-      <div className="flex flex-col space-y-4 lg:space-y-6">
+      {/* Panel - Preview */}
+      <div className="flex flex-col space-y-4 lg:space-y-8 pb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-            <ImageIcon className="w-5 h-5 text-slate-900" />
+          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+            <ImageIcon className="w-5 h-5 text-emerald-600" />
           </div>
           <div className="min-w-0">
             <h3 className="text-base lg:text-lg font-bold text-slate-900">
@@ -449,18 +464,19 @@ function ImageTransform({
         </div>
 
         {/* Preview Area */}
-        <div className="flex-1 flex items-center justify-center rounded-2xl lg:rounded-3xl bg-linear-to-br from-zinc-900/50 to-black/50 border border-white/10 p-6 lg:p-8 relative overflow-hidden min-h-[300px] lg:min-h-[400px]">
+        <div className="flex-1 flex items-center justify-center rounded-2xl lg:rounded-3xl bg-slate-100 border border-slate-200 p-6 lg:p-8 relative overflow-hidden min-h-[300px] lg:min-h-[400px] group">
           {/* Grid pattern background */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-size-[24px_24px] lg:bg-size-[32px_32px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,#e2e8f0_25%,transparent_25%,transparent_75%,#e2e8f0_75%,#e2e8f0),linear-gradient(45deg,#e2e8f0_25%,transparent_25%,transparent_75%,#e2e8f0_75%,#e2e8f0)] bg-size-[20px_20px] bg-position-[0_0,10px_10px] opacity-40 pointer-events-none" />
 
-          {transformedImage && (
+          {transformedImage ? (
             <div className="relative z-10 w-full h-full flex items-center justify-center">
               <Image
                 src={transformedImage}
                 alt="Transformed preview"
                 width={uploadedImage?.width}
                 height={uploadedImage?.height}
-                className="w-full h-auto max-h-[300px] lg:max-h-[500px] object-contain rounded-xl lg:rounded-2xl shadow-2xl"
+                className="w-full h-auto max-h-[300px] lg:max-h-[500px] object-contain rounded-xl lg:rounded-2xl shadow-xl"
+                unoptimized
                 onError={() => {
                   toast.error("Failed to load image");
                   setTransformedImage(uploadedImage?.url);
@@ -469,11 +485,11 @@ function ImageTransform({
 
               {/* Loading Overlay */}
               {isTransforming && (
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center rounded-xl lg:rounded-2xl">
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-xl lg:rounded-2xl">
                   <div className="text-center space-y-4 px-4">
                     <div className="relative">
-                      <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-pink-500 rounded-full blur-2xl opacity-50 animate-pulse" />
-                      <Loader2 className="relative w-10 h-10 lg:w-12 lg:h-12 text-purple-400 animate-spin mx-auto" />
+                      <div className="absolute inset-0 bg-indigo-200 rounded-full blur-xl opacity-50 animate-pulse" />
+                      <Loader2 className="relative w-10 h-10 lg:w-12 lg:h-12 text-indigo-600 animate-spin mx-auto" />
                     </div>
                     <div>
                       <p className="text-slate-900 font-semibold text-base lg:text-lg">
@@ -487,16 +503,21 @@ function ImageTransform({
                 </div>
               )}
             </div>
+          ) : (
+            <div className="relative z-10 text-slate-400 flex flex-col items-center">
+              <Loader2 className="w-8 h-8 animate-spin mb-2" />
+              <span className="text-sm font-medium">Loading Preview...</span>
+            </div>
           )}
         </div>
 
         {/* Bottom Action Bar */}
         {uploadedImage && transformedImage && (
-          <div className="p-4 lg:p-6 rounded-2xl bg-linear-to-br from-white/5 to-white/2 border border-white/10">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-4 lg:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="flex flex-col items-start justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-                  <Check className="w-5 h-5 lg:w-6 lg:h-6 text-slate-900" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                  <Check className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-slate-900 font-semibold text-sm lg:text-base">
@@ -508,18 +529,18 @@ function ImageTransform({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center justify-end gap-3 w-full">
                 <Button
                   onClick={handleClose}
                   variant="outline"
-                  className="flex-1 sm:flex-none border-white/10 hover:bg-white/5 text-slate-900 rounded-xl px-4 lg:px-6 h-10 lg:h-11"
+                  className="flex-1 sm:flex-none border-slate-200 hover:bg-slate-100! hover:text-indigo-700 text-slate-700 rounded-xl px-4 lg:px-6 h-10 lg:h-11"
                 >
                   Cancel
                 </Button>
 
                 <Button
                   onClick={handleSelectImage}
-                  className="flex-1 sm:flex-none bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-900 rounded-xl px-4 lg:px-6 h-10 lg:h-11 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all"
+                  className="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-4 lg:px-6 h-10 lg:h-11 shadow-md shadow-indigo-100 transition-all"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   <span className="truncate">Use This Image</span>
