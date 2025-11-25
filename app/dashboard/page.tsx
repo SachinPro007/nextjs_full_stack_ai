@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Activitis } from "@/convex/dashboard";
 import { Post } from "@/convex/schema";
+import { User } from "@/convex/users";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -56,6 +57,10 @@ interface RecentActivitis {
 }
 
 function Dashboard() {
+  // fetch data
+  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser) as {
+    data: User | undefined;
+  };
   const { data: analytics, isLoading: analyticsLoading } = useConvexQuery(
     api.dashboard.getAnalytics,
   ) as Analytics;
@@ -149,7 +154,7 @@ function Dashboard() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
             Welcome back, <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-violet-600">
-              Creator.
+              {currentUser?.name || "Creator"}.
             </span>
           </h1>
           <p className="text-slate-500 text-lg max-w-xl leading-relaxed">

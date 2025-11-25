@@ -19,6 +19,8 @@ import {
 import { toast } from "sonner";
 import PostCard, { PostWithAuthor } from "@/components/dashboard-com/PostCard";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
+import { User } from "@/convex/users";
 
 // types
 interface UserProfileFnProp {
@@ -34,6 +36,8 @@ interface GetUserByUsername {
         imageUrl: string;
         createdAt: number;
         bio?: string;
+        state?: string;
+        country?: string;
       }
     | undefined;
   isLoading: boolean;
@@ -42,9 +46,16 @@ interface GetUserByUsername {
 
 function UserProfilePage({ params }: UserProfileFnProp) {
   const { username } = React.use(params);
-  const { user: currentUser } = useUser();
+  const { user: clerkuser } = useUser();
+
+  // Get Current logged in user
+  const { data: currentUser } = useConvexQuery(
+    api.users.getCurrentUser,
+    clerkuser ? {} : "skip",
+  ) as { data: User | undefined };
 
   // --- Data Fetching ---
+  // Get Profile User (Public - Runs for everyone)
   const {
     data: user,
     isLoading: userLoading,
@@ -99,7 +110,7 @@ function UserProfilePage({ params }: UserProfileFnProp) {
       toast.error("Please sign in to follow users");
       return;
     }
-    if (username === user.username) {
+    if (user.username === currentUser.username) {
       toast.error("You cannot follow yourself");
       return;
     }
@@ -181,12 +192,14 @@ function UserProfilePage({ params }: UserProfileFnProp) {
 
                 {/* Edit Profile Button (If Own Profile) */}
                 {isOwnProfile && (
-                  <Button
-                    variant="outline"
-                    className="rounded-xl h-12 px-6 font-bold border-slate-200 text-slate-700"
-                  >
-                    Edit Profile
-                  </Button>
+                  <Link href={"/dashboard/settings"}>
+                    <Button
+                      variant="outline"
+                      className="rounded-xl h-12 px-6 font-bold border-slate-200 hover:text-indigo-600 text-slate-700 cursor-pointer"
+                    >
+                      Edit Profile
+                    </Button>
+                  </Link>
                 )}
               </div>
 
@@ -205,11 +218,26 @@ function UserProfilePage({ params }: UserProfileFnProp) {
                   </p>
                 </div>
 
-                {/* Bio Placeholder */}
-                <p className="text-slate-600 max-w-2xl leading-relaxed text-lg">
-                  {user.bio ||
-                    "Digital explorer and content creator. Sharing insights on technology, design, and the future of web development."}
-                </p>
+                {/* Bio Section */}
+                <div className="max-w-2xl">
+                  {user.bio ? (
+                    <p className="text-slate-600 text-lg leading-relaxed">
+                      {user.bio}
+                    </p>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 text-slate-400 italic text-lg">
+                      <span>No bio added yet.</span>
+                      {isOwnProfile && (
+                        <Link
+                          href="/dashboard/settings"
+                          className="not-italic font-semibold text-indigo-600 hover:text-indigo-700 hover:underline decoration-indigo-200 underline-offset-4 transition-all"
+                        >
+                          Complete your profile
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Meta Details */}
                 <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-medium pt-2">
@@ -225,7 +253,11 @@ function UserProfilePage({ params }: UserProfileFnProp) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-4 h-4" />
-                    <span>Earth, Milky Way</span>
+                    <span>
+                      {user.state && user.country
+                        ? `${user.state}, ${user.country}`
+                        : "Unknown "}
+                    </span>
                   </div>
                 </div>
               </div>

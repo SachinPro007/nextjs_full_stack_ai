@@ -19,6 +19,22 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 
+// types
+interface Analytics {
+  data:
+    | {
+        totalView: number;
+        totalLikes: number;
+        recentComments: number;
+        totalFollowers: number;
+        viewsGrowth: number;
+        likesGrowth: number;
+        commentsGrowth: number;
+        followersGrowth: number;
+      }
+    | undefined;
+}
+
 interface SideBarFunProp {
   mobileOpen: boolean;
   sidebarCollapsed: boolean;
@@ -70,6 +86,10 @@ function Sidebar({
   const pathname = usePathname();
   const { isAuthenticated } = useStoreUser();
   const { data: draftPost } = useConvexQuery(api.posts.getDraftPost);
+
+  const { data: analytics } = useConvexQuery(
+    api.dashboard.getAnalytics,
+  ) as Analytics;
 
   return (
     <aside
@@ -127,9 +147,12 @@ function Sidebar({
               <TrendingUp className="w-4 h-4 text-purple-400" />
             </div>
             <div className="text-2xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              12.5K
+              {analytics && analytics.totalView.toLocaleString()}
             </div>
-            <div className="text-xs text-green-400 mt-1">+18.2% this week</div>
+            <div className="text-xs text-green-400 mt-1">
+              {(analytics?.viewsGrowth && analytics.viewsGrowth) || 0}% this
+              week
+            </div>
           </div>
         </div>
       )}

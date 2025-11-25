@@ -28,6 +28,9 @@ export default defineSchema({
     tokenIdentifier: v.string(),
     imageUrl: v.optional(v.string()),
     username: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    state: v.optional(v.string()),
+    country: v.optional(v.string()),
 
     createdAt: v.number(),
     lastActiveAt: v.number(),

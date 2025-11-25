@@ -130,6 +130,54 @@ export const getUserByUsername = query({
       username: user.username,
       imageUrl: user.imageUrl,
       createdAt: user.createdAt,
+      bio: user.bio,
+      state: user.state,
+      country: user.country,
     };
+  },
+});
+
+// update user profile info
+export const updateProfile = mutation({
+  args: {
+    username: v.string(),
+    bio: v.optional(v.string()),
+    state: v.optional(v.string()),
+    country: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user: User = await ctx.runQuery(api.users.getCurrentUser);
+
+    // Validate username query
+    if (args.username.length < 3 || args.username.length > 20) {
+      throw new Error("Username must be between 3 and 20 characters");
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(args.username)) {
+      throw new Error(
+        "Username can only contain letters, numbers, underscores, and hyphens",
+      );
+    }
+
+    if (args.username !== user.username) {
+      const existingUser = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("username"), args.username))
+        .unique();
+
+      if (existingUser) {
+        throw new Error("Username is already taken");
+      }
+    }
+
+    await ctx.db.patch(user._id, {
+      username: args.username,
+      bio: args.bio,
+      state: args.state,
+      country: args.country,
+    });
+
+    return user._id;
   },
 });
