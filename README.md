@@ -1,6 +1,6 @@
 # Ezensi - AI-Native Content Platform
 
-![Ezensi Banner](/nextjs_ai_platform/public/Ezensi.png)
+![Ezensi Banner](https://sachinpro.vercel.app/Ezensi.png)
 **Ezensi** is a modern, full-stack content creation platform designed for developers and technical writers. It combines a distraction-free block editor with powerful AI capabilities (Google Gemini) and real-time cloud infrastructure (Convex).
 
 Built with the **bleeding edge** of the React ecosystem: **Next.js 16**, **React 19**, and **Tailwind CSS v4**.
