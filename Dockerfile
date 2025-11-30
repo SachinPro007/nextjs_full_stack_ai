@@ -12,6 +12,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# PUBLIC keys, these keys are required for build the app
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_aGFybWxlc3MtcXVhZ2dhLTk4LmNsZXJrLmFjY291bnRzLmRldiQ
+ENV NEXT_PUBLIC_CONVEX_URL=https://brave-akita-339.convex.cloud
+ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
 
 # Build the Next.js application
 RUN npm run build
