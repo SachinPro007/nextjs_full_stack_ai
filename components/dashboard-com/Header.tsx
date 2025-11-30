@@ -19,7 +19,7 @@ function Header({
             onClick={() => setMobileOpen(true)}
             className="lg:hidden hover:bg-white/5 rounded-xl"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5 text-white" />
           </Button>
 
           {/* Search Bar */}

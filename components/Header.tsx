@@ -105,9 +105,9 @@ function Header() {
 
             <Authenticated>
               <Link href="/dashboard">
-                <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-white hover:border-indigo-200 hover:text-indigo-600 hover:shadow-sm transition-all duration-300 group">
+                <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-white hover:border-indigo-200 hover:text-indigo-600 hover:shadow-sm transition-all duration-300 group">
                   <LayoutDashboard className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                  <span>Dashboard</span>
+                  <span className="hidden sm:flex">Dashboard</span>
                 </button>
               </Link>
 

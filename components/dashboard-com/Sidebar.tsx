@@ -4,10 +4,10 @@ import {
   Menu,
   PenTool,
   Settings,
+  Sparkles,
   TrendingUp,
   Users,
   X,
-  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -111,7 +111,7 @@ function Sidebar({
           <div className="relative -ml-2">
             <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative w-12 h-12 bg-linear-to-br from-purple-500 to-cyan-500 rounded-2xl flex items-center justify-center">
-              <Zap className="w-6 h-6 text-white" />
+              <Sparkles className="w-4 h-4 text-white" />
             </div>
           </div>
           {!sidebarCollapsed && (
@@ -132,7 +132,7 @@ function Sidebar({
           onClick={() => setMobileOpen(false)}
           className="lg:hidden hover:bg-white/5 rounded-xl"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-white" />
         </Button>
       </div>
 
