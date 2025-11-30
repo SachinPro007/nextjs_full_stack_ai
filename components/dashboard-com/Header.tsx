@@ -49,6 +49,7 @@ function Header({
           <div className="relative group">
             <div className="absolute inset-0 bg-linear-to-r from-purple-500 to-cyan-500 rounded-2xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
             <UserButton
+              afterSignOutUrl="/"
               appearance={{
                 elements: {
                   avatarBox:

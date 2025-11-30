@@ -18,12 +18,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ezensi.vercel.app/"),
+
   title: {
-    default: "Ezensi | Ai Blogging Platform",
-    template: "%s | Ai Blogging Platform",
+    default: "Ezensi | The AI-Native Blogging Platform",
+    template: "%s | Ezensi",
   },
   description:
-    "AI-powered writing, advanced analytics, and growth tools to help you build a thriving creator business.",
+    "Draft faster, write better, and grow your audience with Ezensi. An AI-powered publishing platform designed for modern creators and developers.",
+
+  keywords: [
+    "AI Blogging",
+    "Next.js Blog",
+    "Content Creation",
+    "Writing Assistant",
+    "Developer Portfolio",
+    "Ezensi",
+  ],
+
+  authors: [
+    { name: "Sachin Sehrawat", url: "https://github.com/SachinPro007" },
+  ],
+  creator: "Sachin Sehrawat",
+
+  // Open Graph (For LinkedIn, WhatsApp, Facebook)
+  openGraph: {
+    title: "Ezensi | The AI-Native Blogging Platform",
+    description:
+      "Experience the future of writing. AI-powered tools, real-time analytics, and a seamless reading experience.",
+    url: "https://ezensi.vercel.app/",
+    siteName: "Ezensi",
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Ezensi Platform Preview",
+      },
+    ],
+  },
+
+  // Twitter Card (For X/Twitter)
+  twitter: {
+    card: "summary_large_image",
+    title: "Ezensi | The AI-Native Blogging Platform",
+    description:
+      "Draft faster, write better, and grow your audience with Ezensi.",
+    images: ["/og-image.png"], // Uncomment if you have an image
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -39,7 +95,7 @@ export default function RootLayout({
         >
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
