@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/Ezensi.png",
         width: 1200,
         height: 630,
         alt: "Ezensi Platform Preview",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "Ezensi | The AI-Native Blogging Platform",
     description:
       "Draft faster, write better, and grow your audience with Ezensi.",
-    images: ["/og-image.png"], // Uncomment if you have an image
+    images: ["/Ezensi.png"],
   },
 
   robots: {
