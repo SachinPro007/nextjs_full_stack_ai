@@ -6,8 +6,21 @@ import { useConvexQuery } from "@/hooks/use-convex-query";
 import { useParams } from "next/navigation";
 import React from "react";
 import { BarLoader } from "react-spinners";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 function EditPost() {
+  const { isLoaded, isSignedIn } = useUser();
+  const router = useRouter();
+
+  // if user not logged, Redirect to hpme page
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      return router.push("/");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  
   const { id } = useParams();
   const { data: post, isLoading } = useConvexQuery(api.posts.getPostById, {
     _id: id,
