@@ -4,9 +4,9 @@ import PostEditor from "@/components/dashboard-com/create/PostEditor";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { BarLoader } from "react-spinners";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 function EditPost() {
