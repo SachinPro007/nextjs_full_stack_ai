@@ -1,3 +1,5 @@
+"use client";
+
 import {
   FileText,
   LayoutDashboard,
@@ -11,15 +13,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useStoreUser } from "@/hooks/use-store-user";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
 
 // types
 interface Analytics {
@@ -87,16 +87,6 @@ function Sidebar({
 }: SideBarFunProp) {
   const pathname = usePathname();
   const { isAuthenticated } = useStoreUser();
-
-  const { isLoaded, isSignedIn } = useUser();
-  const router = useRouter();
-
-  // if user not logged, Redirect to hpme page
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      return router.push("/");
-    }
-  }, [isLoaded, isSignedIn, router]);
 
   const { data: draftPost } = useConvexQuery(api.posts.getDraftPost);
 

@@ -1,26 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "../ui/button";
 import { Bell, Menu, Search } from "lucide-react";
-import { UserButton, useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { UserButton } from "@clerk/nextjs";
 
 function Header({
   setMobileOpen,
 }: {
   setMobileOpen: (value: boolean) => void;
 }) {
-  const { isLoaded, isSignedIn } = useUser();
-  const router = useRouter();
-
-  // after logout user
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      return router.push("/");
-    }
-  }, [isLoaded, isSignedIn, router]);
-
   return (
     <header className="sticky top-0 w-full h-20 bg-zinc-950 backdrop-blur-2xl border-b border-white/5 z-999">
       <div className="h-full px-6 lg:px-8 flex items-center justify-between">
@@ -62,7 +51,6 @@ function Header({
           <div className="relative group">
             <div className="absolute inset-0 bg-linear-to-r from-purple-500 to-cyan-500 rounded-2xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
             <UserButton
-              afterSignOutUrl="/"
               appearance={{
                 elements: {
                   avatarBox:

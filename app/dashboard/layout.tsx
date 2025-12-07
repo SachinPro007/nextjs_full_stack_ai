@@ -3,15 +3,28 @@
 import Header from "@/components/dashboard-com/Header";
 import Sidebar from "@/components/dashboard-com/Sidebar";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isLoaded, isSignedIn } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  if (!isLoaded) return null;
 
   return (
     <div className="relative min-h-screen bg-white text-slate-900 font-sans overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900">
