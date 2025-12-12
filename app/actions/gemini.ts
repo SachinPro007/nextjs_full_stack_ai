@@ -23,7 +23,7 @@ export async function generatBlogContent(
     }
 
     // Use Gemini 1.5 Pro if available for better reasoning, otherwise Flash is fine
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // THE "ELITE WRITER" PROMPT
     const prompt = `
@@ -108,7 +108,7 @@ export async function improveContent(
       throw new Error("Content is required for improvement");
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     let prompt = "";
     const baseInstructions = `
@@ -215,7 +215,7 @@ export async function generateSmartSuggestion(topic: string) {
     if (!topic) throw new Error("Topic is required");
 
     // Use Flash for speed (it's perfect for short text)
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // THE "ELITE MICRO-WRITER" PROMPT
     const prompt = `
