@@ -31,6 +31,7 @@ import {
   testimonials,
   workflows,
 } from "@/lib/data";
+import { toast } from "sonner";
 
 const Home = () => {
   const { isAuthenticated } = useStoreUser();
@@ -50,13 +51,26 @@ const Home = () => {
     setSuggestion("");
     setDisplayedText("");
 
-    // Call the Server Action
-    const res = await generateSmartSuggestion(input);
+    try {
+      const res = (await generateSmartSuggestion(input)) as {
+        success: boolean;
+        content?: string;
+        error?: string;
+      };
 
-    if (res.success && res.content) {
-      setSuggestion(res.content);
-      setIsLoading(false);
-    } else {
+      if (res.success && res.content) {
+        setSuggestion(res.content);
+      } else {
+        console.error("AI Error:", res.error); // See the error in browser console
+        toast.error(res.error || "Something went wrong. Try again.");
+        setHasGenerated(false); // Reset UI so they can try again
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Failed to connect to server.");
+        setHasGenerated(false);
+      }
+    } finally {
       setIsLoading(false);
     }
   };

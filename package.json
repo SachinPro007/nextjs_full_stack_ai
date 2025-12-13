@@ -16,7 +16,6 @@
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",
     "@clerk/themes": "^2.4.29",
-    "@google/genai": "^1.29.0",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@imagekit/next": "^2.1.3",

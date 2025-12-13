@@ -107,7 +107,7 @@ export const testimonials = [
 
 export const comparisonFeatures = [
   { name: "Real-time DB (Convex)", us: true, others: false },
-  { name: "AI Writing (Gemini Pro)", us: true, others: "Paid Plugin" },
+  { name: "AI Writing (Gemini)", us: true, others: "Paid Plugin" },
   { name: "Type-Safety", us: "100%", others: "Partial" },
   { name: "Auth (Clerk)", us: "Enterprise", others: "Basic" },
   { name: "Modern UI (Tailwind 4)", us: true, others: false },
