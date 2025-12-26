@@ -49,7 +49,7 @@ const Home = () => {
       <section className="relative z-10 pt-32 pb-24 px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           {/* Left: Value Proposition */}
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-700">
+          <div className="space-y-8 lg:animate-in lg:fade-in lg:slide-in-from-bottom-10 lg:not-last:duration-700">
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-50 border border-slate-200 shadow-sm transition-transform hover:scale-105 cursor-default">
               <span className="flex h-2 w-2 relative">
