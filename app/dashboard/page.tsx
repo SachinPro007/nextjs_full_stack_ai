@@ -390,7 +390,7 @@ function Dashboard() {
                   >
                     {/* Timeline Dot */}
                     <div
-                      className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ring-1 ${
+                      className={`absolute -left-2.25 top-0 w-4 h-4 rounded-full border-2 border-white ring-1 ${
                         activity.type === "like"
                           ? "bg-pink-500 ring-pink-100"
                           : activity.type === "comment"
@@ -410,7 +410,7 @@ function Dashboard() {
                           {activity.type === "follow" && " followed you"}
                         </span>
                         {activity.post && (
-                          <span className="text-indigo-600 font-medium block mt-1 truncate max-w-[200px] sm:max-w-full">
+                          <span className="text-indigo-600 font-medium block mt-1 truncate max-w-50 sm:max-w-full">
                             &quot;{activity.post}&quot;
                           </span>
                         )}
